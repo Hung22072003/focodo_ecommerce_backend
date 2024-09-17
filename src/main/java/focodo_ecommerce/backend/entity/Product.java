@@ -35,4 +35,15 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade =  CascadeType.ALL)
     private List<ProductImage> productImageList;
+
+    public Product(String name, Long originalPrice, Long sellPrice, Double discount, String subDescription, String mainDescription, int quantity, int packageQuantity) {
+        this.name = name;
+        this.original_price = originalPrice;
+        this.sell_price = sellPrice;
+        this.discount = discount;
+        this.sub_description = subDescription;
+        this.main_description = mainDescription;
+        this.quantity  = quantity;
+        this.package_quantity = packageQuantity;
+    }
 }
