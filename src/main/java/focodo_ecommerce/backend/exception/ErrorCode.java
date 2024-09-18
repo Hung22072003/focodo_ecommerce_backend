@@ -10,6 +10,9 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(1003, "Product not found"),
     PRODUCT_EXIST(1004, "Product already exists"),
     CATEGORY_NOT_FOUND(1005, "Category not found"),
+    USER_EXIST(1006, "User already exists"),
+    USER_NOT_FOUND(1003, "User not found"),
+    TOKEN_EXPIRED(1006, "Token is expired"),
     ;
 
     ErrorCode(int code, String message) {

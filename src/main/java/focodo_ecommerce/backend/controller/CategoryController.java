@@ -1,6 +1,7 @@
 package focodo_ecommerce.backend.controller;
 
 import focodo_ecommerce.backend.dto.CategoryDTO;
+import focodo_ecommerce.backend.dto.ProductDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
 import focodo_ecommerce.backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,7 @@ public class CategoryController {
     @GetMapping("/getAllCategories")
     public ApiResponse<List<CategoryDTO>> getAllCategory(
     ) {
-        ApiResponse<List<CategoryDTO>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(categoryService.getAllCategories());
-        return apiResponse;
+        return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategories()).build();
     }
 
     @GetMapping("/all")
@@ -26,17 +25,13 @@ public class CategoryController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        ApiResponse<List<CategoryDTO>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(categoryService.getAllCategories(page, size));
-        return apiResponse;
+        return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategories(page, size)).build();
     }
 
     @GetMapping("/getCategoryById/{id}")
     public ApiResponse<CategoryDTO> getCategoryById(
             @PathVariable("id") int id
     ) {
-        ApiResponse<CategoryDTO> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(categoryService.getCategoryById(id));
-        return apiResponse;
+        return ApiResponse.<CategoryDTO>builder().result(categoryService.getCategoryById(id)).build();
     }
 }

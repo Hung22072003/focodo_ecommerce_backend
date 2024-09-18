@@ -22,9 +22,7 @@ public class ProductController {
     public ApiResponse<ProductDTO> getProductById(
             @PathVariable int id
     ) {
-        ApiResponse<ProductDTO> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.getProductById(id));
-        return apiResponse;
+        return ApiResponse.<ProductDTO>builder().result(productService.getProductById(id)).build();
     }
 
     @GetMapping("/getAllProduct")
@@ -32,9 +30,7 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue =  "10") int size
     ) {
-        ApiResponse<List<ProductDTO>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.getAllProduct(page, size));
-        return apiResponse;
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getAllProduct(page, size)).build();
     }
 
     @GetMapping("/getProductsByCategory/{id}")
@@ -43,9 +39,7 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue =  "8") int size
     ) {
-        ApiResponse<List<ProductDTO>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.getProductsByCategory(page, size, id));
-        return apiResponse;
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(page, size, id)).build();
     }
 
     @GetMapping("/search")
@@ -54,9 +48,7 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "4") int size
     ) {
-        ApiResponse<List<ProductDTO>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.searchProducts(query, page, size));
-        return apiResponse;
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.searchProducts(query, page, size)).build();
     }
 
     @PostMapping("/create")
@@ -64,9 +56,7 @@ public class ProductController {
             @RequestParam(name = "images", required = false) List<MultipartFile> images,
             @RequestPart(name = "product") @Valid ProductRequest productRequest
     ) {
-        ApiResponse<ProductDTO> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.createProduct(productRequest, images));
-        return apiResponse;
+        return ApiResponse.<ProductDTO>builder().result(productService.createProduct(productRequest, images)).build();
     }
 
     @PutMapping("/update/{id}")
@@ -75,9 +65,7 @@ public class ProductController {
             @RequestParam(name = "images", required = false) List<MultipartFile> images,
             @RequestPart(name = "product") @Valid ProductRequest productRequest
     ) {
-        ApiResponse<ProductDTO> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.updateProduct(id, productRequest, images));
-        return apiResponse;
+        return ApiResponse.<ProductDTO>builder().result(productService.updateProduct(id, productRequest, images)).build();
     }
 
     @PutMapping("/updateDescription/{id}")
@@ -85,9 +73,7 @@ public class ProductController {
             @PathVariable("id") int id,
             @RequestParam(name = "description", required = false) String description
     ) {
-        ApiResponse<ProductDTO> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(productService.updateDescriptionProduct(id, description));
-        return apiResponse;
+        return ApiResponse.<ProductDTO>builder().result(productService.updateDescriptionProduct(id, description)).build();
     }
 
     @DeleteMapping("/delete/{id}")
@@ -95,8 +81,6 @@ public class ProductController {
             @PathVariable("id") int id
     ) {
         productService.deleteProduct(id);
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-        apiResponse.setResult("Delete product successfully");
-        return apiResponse;
+        return ApiResponse.<String>builder().result("Delete product successfully").build();
     }
 }
