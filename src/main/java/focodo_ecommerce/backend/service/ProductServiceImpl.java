@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,7 @@ public class ProductServiceImpl implements ProductService{
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductImageRepository productImageRepository;
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public ProductDTO createProduct(ProductRequest productRequest, List<MultipartFile> images) {
         if(productRepository.existsByName(productRequest.getName())) throw new AppException(ErrorCode.PRODUCT_EXIST);
@@ -98,7 +100,7 @@ public class ProductServiceImpl implements ProductService{
         if(query.isEmpty()) return List.of();
         return productRepository.findByNameContaining(query, PageRequest.of(page, size, Sort.by("id").descending())).stream().map(ProductDTO::new).toList();
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void deleteProduct(int id) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -152,6 +154,7 @@ public class ProductServiceImpl implements ProductService{
         return "clothes_shop/product/" + parts[0];
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> images) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -164,7 +167,7 @@ public class ProductServiceImpl implements ProductService{
         productRepository.save(foundProduct);
         return new ProductDTO(foundProduct);
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public ProductDTO updateDescriptionProduct(int id, String description) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
