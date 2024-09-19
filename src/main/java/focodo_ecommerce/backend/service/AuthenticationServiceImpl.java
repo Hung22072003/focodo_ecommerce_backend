@@ -40,7 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).refreshToken(jwtRefreshToken).build();
+        return AuthenticationResponse.builder().access_token(jwtToken).refresh_token(jwtRefreshToken).build();
     }
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -53,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).refreshToken(jwtRefreshToken).build();
+        return AuthenticationResponse.builder().access_token(jwtToken).refresh_token(jwtRefreshToken).build();
     }
     @Override
     public AuthenticationResponse refreshToken(String token){
@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(jwtService.isTokenValid(token, user)) {
             var jwtToken = jwtService.generateToken(user);
             var jwtRefreshToken = jwtService.generateRefreshToken(user);
-            return AuthenticationResponse.builder().token(jwtToken).refreshToken(jwtRefreshToken).build();
+            return AuthenticationResponse.builder().access_token(jwtToken).refresh_token(jwtRefreshToken).build();
         } else {
             throw new AppException(ErrorCode.TOKEN_EXPIRED);
         }

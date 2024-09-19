@@ -151,7 +151,7 @@ public class ProductServiceImpl implements ProductService{
 
         // Tách phần tên file và phần mở rộng
         String[] parts = fileNameWithExtension.split("\\.");
-        return "clothes_shop/product/" + parts[0];
+        return "focodo_ecommerce/product/" + parts[0];
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
