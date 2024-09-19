@@ -19,13 +19,6 @@ public interface ProductService {
     List<ProductDTO> searchProducts(String query, int page, int size);
 
     void deleteProduct(int id);
-
-    void deleteProductImagesOnCloud(List<ProductImage> productImages);
-
-    List<String> getNameImages(List<ProductImage> productImages);
-
-    String getNameOneImage(ProductImage productImage);
-
     ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> images);
 
     ProductDTO updateDescriptionProduct(int id, String description);

@@ -32,10 +32,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
+    private final String folderName = "focodo_ecommerce/product";
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductImageRepository productImageRepository;
+    private final CloudinaryService cloudinaryService;
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public ProductDTO createProduct(ProductRequest productRequest, List<MultipartFile> images) {
@@ -52,27 +54,9 @@ public class ProductServiceImpl implements ProductService{
             });
         }
 
-        List<String> productImages = new ArrayList<String>();
-        if(images != null) {
-            List<CompletableFuture<String>> futures = images.stream()
-                    .map(image -> CompletableFuture.supplyAsync(() -> {
-                        try {
-                            Map result = cloudinary.getInstance().uploader().upload(image.getBytes(), ObjectUtils.asMap("folder", "focodo_ecommerce/product",
-                                    "resource_type", "image"));
-                            productImageRepository.save(new ProductImage(result.get("secure_url").toString(), saveProduct));
-                            return result.get("secure_url").toString();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }))
-                    .collect(Collectors.toList());
-
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-            productImages.addAll(futures.stream()
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList()));
-        }
+        List<String> productImages = cloudinaryService.uploadMultipleFiles(images, folderName);
+        List<ProductImage> productSavedImages = productImages.stream().map((image) -> new ProductImage(image, saveProduct)).toList();
+        productImageRepository.saveAll(productSavedImages);
         ProductDTO productDTO = new ProductDTO(saveProduct);
         productDTO.setImages(productImages);
         return productDTO;
@@ -105,53 +89,9 @@ public class ProductServiceImpl implements ProductService{
     public void deleteProduct(int id) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         List<ProductImage> productImages = foundProduct.getProductImageList();
-        deleteProductImagesOnCloud(productImages);
+        List<String> deleteImages = productImages.stream().map(ProductImage::getImage).toList();
+        cloudinaryService.deleteMultipleFiles(deleteImages, folderName);
         productRepository.delete(foundProduct);
-    }
-
-    @Override
-    public void deleteProductImagesOnCloud(List<ProductImage> productImages) {
-        List<String> nameImages = getNameImages(productImages);
-        List<CompletableFuture<Void>> deletionFutures = nameImages.stream()
-                .map(name -> CompletableFuture.runAsync(() -> {
-                    try {
-                        cloudinary.getInstance().api().deleteResources(Arrays.asList(name),
-                                ObjectUtils.asMap("type", "upload", "resource_type", "image"));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }))
-                .collect(Collectors.toList());
-
-        CompletableFuture<Void> allDeletions = CompletableFuture.allOf(
-                deletionFutures.toArray(new CompletableFuture[0]));
-
-        try {
-            allDeletions.get(); // Wait for all deletions to complete
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<String> getNameImages(List<ProductImage> productImages) {
-        List<String> nameImages = new ArrayList<String>();
-        for(ProductImage productImage: productImages) {
-            nameImages.add(getNameOneImage(productImage));
-        }
-        return nameImages;
-    }
-
-    @Override
-    public String getNameOneImage(ProductImage productImage) {
-        int lastSlashIndex = productImage.getImage().lastIndexOf("/");
-
-        // Cắt chuỗi từ vị trí sau dấu "/" cho đến hết chuỗi
-        String fileNameWithExtension = productImage.getImage().substring(lastSlashIndex + 1);
-
-        // Tách phần tên file và phần mở rộng
-        String[] parts = fileNameWithExtension.split("\\.");
-        return "focodo_ecommerce/product/" + parts[0];
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
