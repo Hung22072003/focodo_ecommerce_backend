@@ -36,6 +36,9 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade =  CascadeType.ALL)
     private List<ProductImage> productImageList;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
     public Product(String name, Long originalPrice, Long sellPrice, Double discount, String subDescription, String mainDescription, int quantity, int packageQuantity) {
         this.name = name;
         this.original_price = originalPrice;

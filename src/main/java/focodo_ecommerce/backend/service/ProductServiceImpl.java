@@ -19,15 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,11 +49,13 @@ public class ProductServiceImpl implements ProductService{
             });
         }
 
-        List<String> productImages = cloudinaryService.uploadMultipleFiles(images, folderName);
-        List<ProductImage> productSavedImages = productImages.stream().map((image) -> new ProductImage(image, saveProduct)).toList();
-        productImageRepository.saveAll(productSavedImages);
         ProductDTO productDTO = new ProductDTO(saveProduct);
-        productDTO.setImages(productImages);
+        if(images != null ) {
+            List<String> productImages = cloudinaryService.uploadMultipleFiles(images, folderName);
+            List<ProductImage> productSavedImages = productImages.stream().map((image) -> new ProductImage(image, saveProduct)).toList();
+            productImageRepository.saveAll(productSavedImages);
+            productDTO.setImages(productImages);
+        }
         return productDTO;
     }
 
@@ -109,10 +106,10 @@ public class ProductServiceImpl implements ProductService{
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public ProductDTO updateDescriptionProduct(int id, String description) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         foundProduct.setMain_description(description);
-        productRepository.save(foundProduct);
         return new ProductDTO(foundProduct);
     }
 }
