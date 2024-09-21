@@ -21,4 +21,9 @@ public class ImageReview {
     @ManyToOne
     @JoinColumn(name = "id_review")
     private Review review;
+
+    public ImageReview(String image, Review saveReview) {
+        this.image = image;
+        this.review = saveReview;
+    }
 }

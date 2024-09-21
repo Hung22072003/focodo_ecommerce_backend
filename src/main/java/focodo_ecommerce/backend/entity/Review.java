@@ -22,7 +22,7 @@ public class Review {
     @Column(name=  "content", length = 5000)
     private String content;
     private LocalDateTime date;
-
+    private int rating;
     @ManyToOne
     @JoinColumn(name = "id_product")
     private Product product;
