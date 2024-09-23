@@ -2,17 +2,19 @@ package focodo_ecommerce.backend.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import focodo_ecommerce.backend.entity.ProductImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +22,12 @@ import java.util.stream.Collectors;
 public class CloudinaryService {
     private final Cloudinary cloudinary;
 
+    public byte[] compressImage(MultipartFile file) throws IOException {
+        BufferedImage image = ImageIO.read(file.getInputStream());
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", byteArrayOutputStream);  // Chuyển ảnh sang định dạng JPG nén
+        return byteArrayOutputStream.toByteArray();
+    }
     public List<String> uploadMultipleFiles(List<MultipartFile> files, String folderName) {
         List<CompletableFuture<String>> futures = files.stream()
                 .map(file -> CompletableFuture.supplyAsync(() -> {

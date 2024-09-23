@@ -2,6 +2,7 @@ package focodo_ecommerce.backend.service;
 
 import com.cloudinary.utils.ObjectUtils;
 import focodo_ecommerce.backend.dto.ProductDTO;
+import focodo_ecommerce.backend.entity.ImageReview;
 import focodo_ecommerce.backend.entity.Product;
 import focodo_ecommerce.backend.entity.ProductCategory;
 import focodo_ecommerce.backend.entity.ProductImage;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -91,9 +93,19 @@ public class ProductServiceImpl implements ProductService{
         productRepository.delete(foundProduct);
     }
 
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
-    public ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> images) {
+    @Transactional
+    public ProductDTO updateDescriptionProduct(int id, String subDescription, String mainDescription) {
+        Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        if(subDescription != null) foundProduct.setSub_description(subDescription);
+        if(mainDescription != null) foundProduct.setMain_description(mainDescription);
+        return new ProductDTO(foundProduct);
+    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> files, List<String> images) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         foundProduct.setName(productRequest.getName());
         foundProduct.setOriginal_price(productRequest.getOriginal_price());
@@ -101,15 +113,32 @@ public class ProductServiceImpl implements ProductService{
         foundProduct.setDiscount(productRequest.getDiscount());
         foundProduct.setQuantity(productRequest.getQuantity());
         foundProduct.setPackage_quantity(productRequest.getPackage_quantity());
+        List<ProductImage> newImages = new ArrayList<ProductImage>();
+        if(files != null ) {
+            newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ProductImage(image, foundProduct)).toList());
+        }
+
+        List<ProductImage> productImages =foundProduct.getProductImageList();
+        if(images != null) {
+            List<String> deleteImages = new ArrayList<>();
+            List<ProductImage> deleteDbImages = new ArrayList<>();
+            productImages.forEach((image) -> {
+                if(images.contains(image.getImage())) newImages.add(image);
+                else {
+                    deleteDbImages.add(image);
+                    deleteImages.add(image.getImage());
+                }
+            });
+            cloudinaryService.deleteMultipleFiles(deleteImages, folderName);
+            productImageRepository.deleteAllInBatch(deleteDbImages);
+        } else {
+            cloudinaryService.deleteMultipleFiles(productImages.stream().map(ProductImage::getImage).toList(), folderName);
+            productImageRepository.deleteAllInBatch(productImages);
+            foundProduct.setProductImageList(null);
+        }
+
+        foundProduct.setProductImageList(newImages);
         productRepository.save(foundProduct);
-        return new ProductDTO(foundProduct);
-    }
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @Override
-    @Transactional
-    public ProductDTO updateDescriptionProduct(int id, String description) {
-        Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        foundProduct.setMain_description(description);
         return new ProductDTO(foundProduct);
     }
 }

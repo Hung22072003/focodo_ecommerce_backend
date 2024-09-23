@@ -19,7 +19,7 @@ public interface ProductService {
     List<ProductDTO> searchProducts(String query, int page, int size);
 
     void deleteProduct(int id);
-    ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> images);
+    ProductDTO updateDescriptionProduct(int id, String subDescription, String mainDescription);
 
-    ProductDTO updateDescriptionProduct(int id, String description);
+    ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> files, List<String> images);
 }

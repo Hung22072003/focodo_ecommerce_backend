@@ -1,8 +1,9 @@
 package focodo_ecommerce.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import focodo_ecommerce.backend.entity.Product;
 import focodo_ecommerce.backend.entity.ProductImage;
-import jakarta.validation.constraints.Max;
+import focodo_ecommerce.backend.model.ReviewResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDTO {
     private int id;
     private String name;
@@ -22,6 +24,7 @@ public class ProductDTO {
     private Double discount;
     private int package_quantity;
     private int quantity;
+    private ReviewResponse review;
     private List<String> images;
 
     public ProductDTO(Product saveProduct) {
@@ -35,5 +38,6 @@ public class ProductDTO {
         this.package_quantity = saveProduct.getPackage_quantity();
         this.quantity = saveProduct.getQuantity();
         this.images = (saveProduct.getProductImageList() != null) ? saveProduct.getProductImageList().stream().map(ProductImage::getImage).toList() : List.of();
+        this.review = (saveProduct.getReviews() != null) ? new ReviewResponse(saveProduct.getReviews()) : null;
     }
 }

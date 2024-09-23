@@ -4,6 +4,7 @@ import focodo_ecommerce.backend.dto.ProductDTO;
 import focodo_ecommerce.backend.entity.Product;
 import focodo_ecommerce.backend.model.ApiResponse;
 import focodo_ecommerce.backend.model.ProductRequest;
+import focodo_ecommerce.backend.service.CloudinaryService;
 import focodo_ecommerce.backend.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,18 +63,20 @@ public class ProductController {
     @PutMapping("/update/{id}")
     public ApiResponse<ProductDTO> updateProduct(
             @PathVariable("id") int id,
-            @RequestParam(name = "images", required = false) List<MultipartFile> images,
+            @RequestParam(name = "files", required = false) List<MultipartFile> files,
+            @RequestParam(name = "images", required = false) List<String> images,
             @RequestPart(name = "product") @Valid ProductRequest productRequest
     ) {
-        return ApiResponse.<ProductDTO>builder().result(productService.updateProduct(id, productRequest, images)).build();
+        return ApiResponse.<ProductDTO>builder().result(productService.updateProduct(id, productRequest, files, images)).build();
     }
 
     @PutMapping("/updateDescription/{id}")
     public ApiResponse<ProductDTO> updateDescription(
             @PathVariable("id") int id,
-            @RequestParam(name = "description", required = false) String description
+            @RequestParam(name = "sub_description", required = false) String sub_description,
+            @RequestParam(name = "main_description", required = false) String main_description
     ) {
-        return ApiResponse.<ProductDTO>builder().result(productService.updateDescriptionProduct(id, description)).build();
+        return ApiResponse.<ProductDTO>builder().result(productService.updateDescriptionProduct(id, sub_description, main_description)).build();
     }
 
     @DeleteMapping("/delete/{id}")
