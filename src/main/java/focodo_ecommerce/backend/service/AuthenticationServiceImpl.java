@@ -6,9 +6,12 @@ import focodo_ecommerce.backend.auth.RegisterRequest;
 import focodo_ecommerce.backend.config.JwtService;
 import focodo_ecommerce.backend.entity.Role;
 import focodo_ecommerce.backend.entity.User;
+import focodo_ecommerce.backend.entity.VerificationCode;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
+import focodo_ecommerce.backend.model.EmailDetails;
 import focodo_ecommerce.backend.repository.UserRepository;
+import focodo_ecommerce.backend.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +19,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +32,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final VerificationCodeRepository verificationCodeRepository;
+    private final EmailService emailService;
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         if(userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -32,6 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         var user = User.builder()
                 .full_name(request.getFull_name())
+                .email(request.getEmail())
                 .phone(request.getPhone())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -66,5 +76,51 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } else {
             throw new AppException(ErrorCode.TOKEN_EXPIRED);
         }
+    }
+
+    @Override
+    public String verifyEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        verificationCodeRepository.findByUser(user).ifPresent(verificationCodeRepository::delete);
+
+        int otp = generateOtp();
+        VerificationCode newVerificationCode = VerificationCode.builder()
+                .otp(otp)
+                .expiration_time(new Date(System.currentTimeMillis() + 60*1000))
+                .user(user)
+                .build();
+
+        EmailDetails emailDetails = EmailDetails.builder()
+                .recipient(email)
+                .subject("Forgot Password - OTP Verification Code")
+                .msgBody("Dear " + user.getFull_name() +",\n" +
+                        "Thank you for using service with us. To verify your email, please enter the following\n" +
+                        "One Time Password (OTP): " + otp + "\n" +
+                        "This OTP is valid for 1 minutes from the receipt of this email.\n" +
+                        "Best regards,\n" +
+                        "Đặc sản Huế - FOCODO")
+                .build();
+
+        verificationCodeRepository.save(newVerificationCode);
+        emailService.sendSimpleMail(emailDetails);
+        return "Verification code is sent to you. Please check your email!";
+    }
+
+    @Override
+    public String verifyOtp(String email, String otp) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        VerificationCode verificationCode = verificationCodeRepository.findByOtpAndUser(otp, user).orElseThrow(() -> new AppException(ErrorCode.OTP_INVALID));
+        if(verificationCode.getExpiration_time().before(Date.from(Instant.now()))) {
+            verificationCodeRepository.delete(verificationCode);
+            throw new AppException(ErrorCode.OTP_EXPIRED);
+        }
+        verificationCodeRepository.delete(verificationCode);
+        return "OTP is verified successfully";
+    }
+
+    @Override
+    public Integer generateOtp() {
+        Random random = new Random();
+        return random.nextInt(100000, 999999);
     }
 }

@@ -23,4 +23,10 @@ public interface AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request);
 
     public AuthenticationResponse refreshToken(String token);
+
+    String verifyEmail(String email);
+
+    String verifyOtp(String email, String otp);
+
+    Integer generateOtp();
 }

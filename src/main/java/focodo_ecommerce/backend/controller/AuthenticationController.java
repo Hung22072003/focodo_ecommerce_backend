@@ -37,4 +37,18 @@ public class AuthenticationController {
     }
 
 
+    @PostMapping("/verifyEmail")
+    public ApiResponse<String> verifyEmail(
+            @RequestParam(value = "email") String email
+    ){
+        return ApiResponse.<String>builder().result(authenticationService.verifyEmail(email)).build();
+    }
+
+    @PostMapping("/verifyOtp")
+    public ApiResponse<String> verifyOtp(
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "otp") String otp
+    ){
+        return ApiResponse.<String>builder().result(authenticationService.verifyOtp(email, otp)).build();
+    }
 }
