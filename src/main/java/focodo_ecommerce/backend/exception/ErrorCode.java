@@ -14,6 +14,10 @@ public enum ErrorCode {
     USER_NOT_FOUND(1007, "User not found"),
     TOKEN_EXPIRED(1008, "Token is expired"),
     REVIEW_NOT_FOUND(1009, "Review not found"),
+    OTP_INVALID(1010, "Otp invalid for email"),
+    OTP_EXPIRED(1011, "Otp is expired"),
+    OLD_PASSWORD_NOT_CORRECT(1012, "Old password is not correct"),
+    PASSWORD_INVALID(1013, "Password has length at least 6")
     ;
 
     ErrorCode(int code, String message) {

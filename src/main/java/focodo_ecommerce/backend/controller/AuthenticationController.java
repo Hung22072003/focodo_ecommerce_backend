@@ -5,6 +5,7 @@ import focodo_ecommerce.backend.auth.AuthenticationResponse;
 import focodo_ecommerce.backend.service.AuthenticationService;
 import focodo_ecommerce.backend.auth.RegisterRequest;
 import focodo_ecommerce.backend.model.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     @PostMapping("/register")
     public ApiResponse<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody @Valid RegisterRequest request
     ) {
         return ApiResponse.<AuthenticationResponse>builder().result(authenticationService.register(request)).build();
     }

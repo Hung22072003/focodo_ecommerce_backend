@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
     private int id;
     private String full_name;
+    private String email;
     private String phone;
     private String address;
     private String province;
@@ -24,6 +25,7 @@ public class UserDTO {
         this.id = user.getId();
         this.full_name = user.getFull_name();
         this.phone = user.getPhone();
+        this.email = user.getEmail();
         this.address = user.getAddress();
         this.province = user.getProvince();
         this.district = user.getDistrict();
