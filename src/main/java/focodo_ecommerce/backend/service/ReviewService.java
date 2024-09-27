@@ -16,4 +16,8 @@ public interface ReviewService {
     void deleteReview(int id);
 
     ReviewDTO updateReview(int id, List<MultipartFile> files, List<String> images, ReviewRequest reviewRequest);
+
+    List<ReviewDTO> getAllReviewsNotPaginated();
+
+    List<ReviewDTO> getReviewsOfProduct(int id);
 }

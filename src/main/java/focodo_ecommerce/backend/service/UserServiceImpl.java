@@ -29,6 +29,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<UserDTO> getAllUsersNotPaginated() {
+        return userRepository.findAll().stream().map(UserDTO::new).toList();
+    }
+    @Override
     public UserDTO getUser(String name) {
         return new UserDTO(userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
@@ -68,4 +73,5 @@ public class UserServiceImpl implements UserService{
         if(!BCrypt.checkpw(old_password, foundUser.getPassword())) throw new AppException(ErrorCode.OLD_PASSWORD_NOT_CORRECT);
         foundUser.setPassword(passwordEncoder.encode(new_password));
     }
+
 }

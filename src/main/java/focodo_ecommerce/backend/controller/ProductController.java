@@ -26,7 +26,7 @@ public class ProductController {
         return ApiResponse.<ProductDTO>builder().result(productService.getProductById(id)).build();
     }
 
-    @GetMapping("/getAllProduct")
+    @GetMapping("")
     public ApiResponse<List<ProductDTO>> getAllProduct(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue =  "10") int size
@@ -34,15 +34,26 @@ public class ProductController {
         return ApiResponse.<List<ProductDTO>>builder().result(productService.getAllProduct(page, size)).build();
     }
 
-    @GetMapping("/getProductsByCategory/{id}")
-    public ApiResponse<List<ProductDTO>> getProductsByCategory(
-            @PathVariable("id") int id,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue =  "8") int size
-    ) {
-        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(page, size, id)).build();
+    @GetMapping("/all")
+    public ApiResponse<List<ProductDTO>> getAllProductNotPaginated() {
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getAllProductNotPaginated()).build();
     }
 
+//    @GetMapping("/getProductsByCategory/{id}")
+//    public ApiResponse<List<ProductDTO>> getProductsByCategory(
+//            @PathVariable("id") int id,
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "size", defaultValue =  "8") int size
+//    ) {
+//        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(page, size, id)).build();
+//    }
+
+    @GetMapping("/getProductsByCategory/{id}")
+    public ApiResponse<List<ProductDTO>> getProductsByCategory(
+            @PathVariable("id") int id
+    ) {
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(id)).build();
+    }
     @GetMapping("/search")
     public ApiResponse<List<ProductDTO>> searchProducts(
             @RequestParam(name = "query") String query,

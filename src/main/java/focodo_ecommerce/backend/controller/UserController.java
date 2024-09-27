@@ -17,11 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @GetMapping("/all")
+    @GetMapping("")
     public ApiResponse<List<UserDTO>> getAllUsers(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue =  "10") int size) {
         return ApiResponse.<List<UserDTO>>builder().result(userService.getAllUsers(page, size)).build();
+    }
+
+    @GetMapping("/all")
+    public ApiResponse<List<UserDTO>> getAllUsersNotPaginated() {
+        return ApiResponse.<List<UserDTO>>builder().result(userService.getAllUsersNotPaginated()).build();
     }
 
     @GetMapping("/getUser")

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -121,5 +122,15 @@ public class ReviewServiceImpl implements ReviewService{
         } else {
             throw new RuntimeException("You do not have permission to update review");
         }
+    }
+
+    @Override
+    public List<ReviewDTO> getAllReviewsNotPaginated() {
+        return reviewRepository.findAll(Sort.by("id").descending()).stream().map(ReviewDTO::new).toList();
+    }
+
+    @Override
+    public List<ReviewDTO> getReviewsOfProduct(int id) {
+        return reviewRepository.findReviewsByProduct(id).stream().sorted(Comparator.comparing(Review::getDate).reversed()).map(ReviewDTO::new).toList();
     }
 }

@@ -17,4 +17,6 @@ public interface UserService {
     boolean checkPassword(String password);
 
     void updatePassword(String old_password, String password);
+
+    List<UserDTO> getAllUsersNotPaginated();
 }

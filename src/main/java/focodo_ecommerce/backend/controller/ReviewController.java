@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
-    @GetMapping("/all")
+    @GetMapping("")
     public ApiResponse<List<ReviewDTO>> getAllReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
@@ -24,14 +24,26 @@ public class ReviewController {
         return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getAllReviews(page, size)).build();
     }
 
+    @GetMapping("/all")
+    public ApiResponse<List<ReviewDTO>> getAllReviewsNotPaginated() {
+        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getAllReviewsNotPaginated()).build();
+    }
+
+//    @GetMapping("/getReviewsOfProduct/{id}")
+//    public ApiResponse<List<ReviewDTO>> getReviewsOfProduct(
+//            @PathVariable("id") int id,
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "size", defaultValue = "10") int size,
+//            @RequestParam(name = "rating", defaultValue = "0") int rating
+//    ) {
+//        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getReviewsOfProduct(id, page, size, rating)).build();
+//    }
+
     @GetMapping("/getReviewsOfProduct/{id}")
     public ApiResponse<List<ReviewDTO>> getReviewsOfProduct(
-            @PathVariable("id") int id,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size,
-            @RequestParam(name = "rating", defaultValue = "0") int rating
+            @PathVariable("id") int id
     ) {
-        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getReviewsOfProduct(id, page, size, rating)).build();
+        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getReviewsOfProduct(id)).build();
     }
     @PostMapping("/create")
     public ApiResponse<ReviewDTO> createReview(

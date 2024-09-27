@@ -29,6 +29,12 @@ public class VoucherServiceImpl implements VoucherService{
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<VoucherDTO> getAllVoucherNotPaginated() {
+        return voucherRepository.findAll().stream().map(VoucherDTO::new).toList();
+    }
+
+    @Override
     public VoucherDTO getVoucherById(String id) {
         return new VoucherDTO(voucherRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.VOUCHER_NOT_FOUND)));
     }

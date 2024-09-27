@@ -26,8 +26,13 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    public List<CategoryDTO> getAllCategoriesNotPaginated() {
+        return categoryRepository.findAll().stream().map(CategoryDTO::new).toList();
+    }
+    @Override
     public CategoryDTO getCategoryById(int id) {
         Category foundCategory = categoryRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
         return new CategoryDTO(foundCategory);
     }
+
 }

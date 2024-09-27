@@ -18,12 +18,17 @@ public class VoucherController {
         return ApiResponse.<List<VoucherDTO>>builder().result(voucherService.getAllVoucher()).build();
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ApiResponse<List<VoucherDTO>> getAllVoucher(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         return ApiResponse.<List<VoucherDTO>>builder().result(voucherService.getAllVoucher(page, size)).build();
+    }
+
+    @GetMapping("/all")
+    public ApiResponse<List<VoucherDTO>> getAllVoucherNotPaginated() {
+        return ApiResponse.<List<VoucherDTO>>builder().result(voucherService.getAllVoucherNotPaginated()).build();
     }
     @GetMapping("/{id}")
     public ApiResponse<VoucherDTO> getAllVoucher(

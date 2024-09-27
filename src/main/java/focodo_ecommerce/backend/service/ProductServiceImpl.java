@@ -35,31 +35,6 @@ public class ProductServiceImpl implements ProductService{
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductImageRepository productImageRepository;
     private final CloudinaryService cloudinaryService;
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @Override
-    public ProductDTO createProduct(ProductRequest productRequest, List<MultipartFile> images) {
-        if(productRepository.existsByName(productRequest.getName())) throw new AppException(ErrorCode.PRODUCT_EXIST);
-        Product product = new Product(productRequest.getName(), productRequest.getOriginal_price(), productRequest.getSell_price(), productRequest.getDiscount(), productRequest.getSub_description(), productRequest.getMain_description(), productRequest.getQuantity(), productRequest.getPackage_quantity());
-        Product saveProduct = productRepository.save(product);
-        if(productRequest.getCategories() != null) {
-            productRequest.getCategories().forEach((category) -> {
-                ProductCategory productCategory = new ProductCategory();
-                productCategory.setProductCategoryId(new ProductCategoryId(saveProduct.getId(),category));
-                productCategory.setProduct(saveProduct);
-                productCategory.setCategory(categoryRepository.findById(category).orElse(null));
-                productCategoryRepository.save(productCategory);
-            });
-        }
-
-        ProductDTO productDTO = new ProductDTO(saveProduct);
-        if(images != null ) {
-            List<String> productImages = cloudinaryService.uploadMultipleFiles(images, folderName);
-            List<ProductImage> productSavedImages = productImages.stream().map((image) -> new ProductImage(image, saveProduct)).toList();
-            productImageRepository.saveAll(productSavedImages);
-            productDTO.setImages(productImages);
-        }
-        return productDTO;
-    }
 
     @Override
     public ProductDTO getProductById(int id) {
@@ -70,6 +45,15 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public List<ProductDTO> getAllProduct(int page, int size) {
         return productRepository.findAll(PageRequest.of(page, size, Sort.by("id"))).get().map(ProductDTO::new).toList();
+    }
+    @Override
+    public List<ProductDTO> getAllProductNotPaginated() {
+        return productRepository.findAll(Sort.by("id").descending()).stream().map(ProductDTO::new).toList();
+    }
+
+    @Override
+    public List<ProductDTO> getProductsByCategory(int id) {
+        return productRepository.findProductsByCategory(id).stream().map(ProductDTO::new).toList();
     }
 
     @Override
@@ -102,6 +86,32 @@ public class ProductServiceImpl implements ProductService{
         if(subDescription != null) foundProduct.setSub_description(subDescription);
         if(mainDescription != null) foundProduct.setMain_description(mainDescription);
         return new ProductDTO(foundProduct);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ProductDTO createProduct(ProductRequest productRequest, List<MultipartFile> images) {
+        if(productRepository.existsByName(productRequest.getName())) throw new AppException(ErrorCode.PRODUCT_EXIST);
+        Product product = new Product(productRequest.getName(), productRequest.getOriginal_price(), productRequest.getSell_price(), productRequest.getDiscount(), productRequest.getSub_description(), productRequest.getMain_description(), productRequest.getQuantity(), productRequest.getPackage_quantity());
+        Product saveProduct = productRepository.save(product);
+        if(productRequest.getCategories() != null) {
+            productRequest.getCategories().forEach((category) -> {
+                ProductCategory productCategory = new ProductCategory();
+                productCategory.setProductCategoryId(new ProductCategoryId(saveProduct.getId(),category));
+                productCategory.setProduct(saveProduct);
+                productCategory.setCategory(categoryRepository.findById(category).orElse(null));
+                productCategoryRepository.save(productCategory);
+            });
+        }
+
+        ProductDTO productDTO = new ProductDTO(saveProduct);
+        if(images != null ) {
+            List<String> productImages = cloudinaryService.uploadMultipleFiles(images, folderName);
+            List<ProductImage> productSavedImages = productImages.stream().map((image) -> new ProductImage(image, saveProduct)).toList();
+            productImageRepository.saveAll(productSavedImages);
+            productDTO.setImages(productImages);
+        }
+        return productDTO;
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
@@ -141,4 +151,6 @@ public class ProductServiceImpl implements ProductService{
         productRepository.save(foundProduct);
         return new ProductDTO(foundProduct);
     }
+
+
 }

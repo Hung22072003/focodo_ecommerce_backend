@@ -22,4 +22,8 @@ public interface ProductService {
     ProductDTO updateDescriptionProduct(int id, String subDescription, String mainDescription);
 
     ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> files, List<String> images);
+
+    List<ProductDTO> getAllProductNotPaginated();
+
+    List<ProductDTO> getProductsByCategory(int id);
 }

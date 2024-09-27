@@ -12,4 +12,6 @@ public interface CategoryService {
     List<CategoryDTO> getAllCategories(int page, int size);
 
     CategoryDTO getCategoryById(int id);
+
+    List<CategoryDTO> getAllCategoriesNotPaginated();
 }

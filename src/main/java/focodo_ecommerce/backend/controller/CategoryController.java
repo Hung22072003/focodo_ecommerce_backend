@@ -20,12 +20,18 @@ public class CategoryController {
         return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategories()).build();
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ApiResponse<List<CategoryDTO>> getAllCategory(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size
     ) {
         return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategories(page, size)).build();
+    }
+
+    @GetMapping("/all")
+    public ApiResponse<List<CategoryDTO>> getAllCategoryNotPaginated(
+    ) {
+        return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategoriesNotPaginated()).build();
     }
 
     @GetMapping("/getCategoryById/{id}")
