@@ -17,8 +17,8 @@ public enum ErrorCode {
     OTP_INVALID(1010, "Otp invalid for email"),
     OTP_EXPIRED(1011, "Otp is expired"),
     OLD_PASSWORD_NOT_CORRECT(1012, "Old password is not correct"),
-    PASSWORD_INVALID(1013, "Password has length at least 6")
-    ;
+    PASSWORD_INVALID(1013, "Password has length at least 6"),
+    CART_NOT_FOUND(1014, "Cart not found");
 
     ErrorCode(int code, String message) {
         this.code = code;

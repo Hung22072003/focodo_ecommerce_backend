@@ -3,6 +3,7 @@ package focodo_ecommerce.backend.controller;
 import focodo_ecommerce.backend.dto.ProductDTO;
 import focodo_ecommerce.backend.entity.Product;
 import focodo_ecommerce.backend.model.ApiResponse;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.ProductRequest;
 import focodo_ecommerce.backend.service.CloudinaryService;
 import focodo_ecommerce.backend.service.ProductService;
@@ -27,11 +28,11 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ApiResponse<List<ProductDTO>> getAllProduct(
+    public ApiResponse<PaginationObjectResponse> getAllProduct(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue =  "10") int size
     ) {
-        return ApiResponse.<List<ProductDTO>>builder().result(productService.getAllProduct(page, size)).build();
+        return ApiResponse.<PaginationObjectResponse>builder().result(productService.getAllProduct(page, size)).build();
     }
 
     @GetMapping("/all")
@@ -39,14 +40,14 @@ public class ProductController {
         return ApiResponse.<List<ProductDTO>>builder().result(productService.getAllProductNotPaginated()).build();
     }
 
-//    @GetMapping("/getProductsByCategory/{id}")
-//    public ApiResponse<List<ProductDTO>> getProductsByCategory(
-//            @PathVariable("id") int id,
-//            @RequestParam(name = "page", defaultValue = "0") int page,
-//            @RequestParam(name = "size", defaultValue =  "8") int size
-//    ) {
-//        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(page, size, id)).build();
-//    }
+    @GetMapping("/getProductsOfCategory/{id}")
+    public ApiResponse<PaginationObjectResponse> getProductsByCategory(
+            @PathVariable("id") int id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue =  "8") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(productService.getProductsByCategory(page, size, id)).build();
+    }
 
     @GetMapping("/getProductsByCategory/{id}")
     public ApiResponse<List<ProductDTO>> getProductsByCategory(
@@ -55,12 +56,12 @@ public class ProductController {
         return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(id)).build();
     }
     @GetMapping("/search")
-    public ApiResponse<List<ProductDTO>> searchProducts(
+    public ApiResponse<PaginationObjectResponse> searchProducts(
             @RequestParam(name = "query") String query,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "4") int size
     ) {
-        return ApiResponse.<List<ProductDTO>>builder().result(productService.searchProducts(query, page, size)).build();
+        return ApiResponse.<PaginationObjectResponse>builder().result(productService.searchProducts(query, page, size)).build();
     }
 
     @PostMapping("/create")

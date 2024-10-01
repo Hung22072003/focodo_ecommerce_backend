@@ -1,6 +1,7 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.CategoryDTO;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public interface CategoryService {
     List<CategoryDTO> getAllCategories();
 
-    List<CategoryDTO> getAllCategories(int page, int size);
+    PaginationObjectResponse getAllCategories(int page, int size);
 
     CategoryDTO getCategoryById(int id);
 

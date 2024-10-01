@@ -2,6 +2,7 @@ package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.ProductDTO;
 import focodo_ecommerce.backend.entity.ProductImage;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.ProductRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,11 +13,11 @@ public interface ProductService {
 
     ProductDTO getProductById(int id);
 
-    List<ProductDTO> getAllProduct(int page, int size);
+    PaginationObjectResponse getAllProduct(int page, int size);
 
-    List<ProductDTO> getProductsByCategory(int page, int size, int id);
+    PaginationObjectResponse getProductsByCategory(int page, int size, int id);
 
-    List<ProductDTO> searchProducts(String query, int page, int size);
+    PaginationObjectResponse searchProducts(String query, int page, int size);
 
     void deleteProduct(int id);
     ProductDTO updateDescriptionProduct(int id, String subDescription, String mainDescription);

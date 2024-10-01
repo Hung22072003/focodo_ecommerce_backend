@@ -5,6 +5,8 @@ import focodo_ecommerce.backend.entity.ImageReview;
 import focodo_ecommerce.backend.entity.Review;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
+import focodo_ecommerce.backend.model.Pagination;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.ReviewRequest;
 import focodo_ecommerce.backend.repository.ImageReviewRepository;
 import focodo_ecommerce.backend.repository.ProductRepository;
@@ -54,19 +56,20 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public List<ReviewDTO> getAllReviews(int page, int size) {
-        return reviewRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending())).stream().map(ReviewDTO::new).toList();
+    public PaginationObjectResponse getAllReviews(int page, int size) {
+        Page<Review> reviews = reviewRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending()));
+        return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(),reviews.getTotalPages(),reviews.getNumber())).build();
     }
 
     @Override
-    public List<ReviewDTO> getReviewsOfProduct(int id, int page, int size, int rating) {
+    public PaginationObjectResponse getReviewsOfProduct(int id, int page, int size, int rating) {
         Page<Review> reviews;
         if(rating == 0) {
             reviews = reviewRepository.findReviewsByProduct(id, PageRequest.of(page, size, Sort.by("date").descending()));
         } else {
             reviews = reviewRepository.findReviewsByProductAndRating(id, rating, PageRequest.of(page, size, Sort.by("date").descending()));
         }
-        return reviews.get().map(ReviewDTO::new).toList();
+        return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(),reviews.getTotalPages(),reviews.getNumber())).build();
     }
 
     @Override

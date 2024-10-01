@@ -1,12 +1,16 @@
 package focodo_ecommerce.backend.service;
 
+import focodo_ecommerce.backend.dto.ReviewDTO;
 import focodo_ecommerce.backend.dto.UserDTO;
 import focodo_ecommerce.backend.entity.User;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
+import focodo_ecommerce.backend.model.Pagination;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.UserProfileRequest;
 import focodo_ecommerce.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,8 +28,9 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<UserDTO> getAllUsers(int page, int size) {
-        return userRepository.findAll(PageRequest.of(page, size)).map(UserDTO::new).stream().toList();
+    public PaginationObjectResponse getAllUsers(int page, int size) {
+        Page<User> users = userRepository.findAll(PageRequest.of(page, size));
+        return PaginationObjectResponse.builder().data(users.get().map(UserDTO::new).toList()).pagination(new Pagination(users.getTotalElements(),users.getTotalPages(),users.getNumber())).build();
     }
 
     @Override

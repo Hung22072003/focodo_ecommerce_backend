@@ -26,8 +26,5 @@ public class Customer {
     private String ward;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Cart> carts;
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders;
 }

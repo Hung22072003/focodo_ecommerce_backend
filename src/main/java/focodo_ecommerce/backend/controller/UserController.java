@@ -3,6 +3,7 @@ package focodo_ecommerce.backend.controller;
 import com.cloudinary.Api;
 import focodo_ecommerce.backend.dto.UserDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.UserProfileRequest;
 import focodo_ecommerce.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,10 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     @GetMapping("")
-    public ApiResponse<List<UserDTO>> getAllUsers(
+    public ApiResponse<PaginationObjectResponse> getAllUsers(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue =  "10") int size) {
-        return ApiResponse.<List<UserDTO>>builder().result(userService.getAllUsers(page, size)).build();
+        return ApiResponse.<PaginationObjectResponse>builder().result(userService.getAllUsers(page, size)).build();
     }
 
     @GetMapping("/all")

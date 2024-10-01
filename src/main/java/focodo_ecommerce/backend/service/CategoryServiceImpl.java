@@ -4,8 +4,11 @@ import focodo_ecommerce.backend.dto.CategoryDTO;
 import focodo_ecommerce.backend.entity.Category;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
+import focodo_ecommerce.backend.model.Pagination;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,8 +24,9 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public List<CategoryDTO> getAllCategories(int page, int size) {
-        return categoryRepository.findAll(PageRequest.of(page, size, Sort.by("id"))).get().map(CategoryDTO::new).toList();
+    public PaginationObjectResponse getAllCategories(int page, int size) {
+        Page<Category> categories = categoryRepository.findAll(PageRequest.of(page, size, Sort.by("id")));
+        return PaginationObjectResponse.builder().data(categories.get().map(CategoryDTO::new).toList()).pagination(new Pagination(categories.getTotalElements(), categories.getTotalPages(), categories.getNumber())).build();
     }
 
     @Override

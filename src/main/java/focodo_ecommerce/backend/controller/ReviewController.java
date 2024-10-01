@@ -2,6 +2,7 @@ package focodo_ecommerce.backend.controller;
 
 import focodo_ecommerce.backend.dto.ReviewDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.ReviewRequest;
 import focodo_ecommerce.backend.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
     @GetMapping("")
-    public ApiResponse<List<ReviewDTO>> getAllReviews(
+    public ApiResponse<PaginationObjectResponse> getAllReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getAllReviews(page, size)).build();
+        return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getAllReviews(page, size)).build();
     }
 
     @GetMapping("/all")
@@ -29,17 +30,17 @@ public class ReviewController {
         return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getAllReviewsNotPaginated()).build();
     }
 
-//    @GetMapping("/getReviewsOfProduct/{id}")
-//    public ApiResponse<List<ReviewDTO>> getReviewsOfProduct(
-//            @PathVariable("id") int id,
-//            @RequestParam(name = "page", defaultValue = "0") int page,
-//            @RequestParam(name = "size", defaultValue = "10") int size,
-//            @RequestParam(name = "rating", defaultValue = "0") int rating
-//    ) {
-//        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getReviewsOfProduct(id, page, size, rating)).build();
-//    }
-
     @GetMapping("/getReviewsOfProduct/{id}")
+    public ApiResponse<PaginationObjectResponse> getReviewsOfProduct(
+            @PathVariable("id") int id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "rating", defaultValue = "0") int rating
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getReviewsOfProduct(id, page, size, rating)).build();
+    }
+
+    @GetMapping("/getReviewsByProduct/{id}")
     public ApiResponse<List<ReviewDTO>> getReviewsOfProduct(
             @PathVariable("id") int id
     ) {

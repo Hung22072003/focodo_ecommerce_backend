@@ -17,17 +17,17 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_cart;
     private int quantity;
-    private Long unit_price;
-    private Long original_price;
-    private String image;
 
-    @ManyToOne
-    @JoinColumn(name = "id_customer")
-    private Customer customer;
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
     @ManyToOne
     @JoinColumn(name = "id_product")
     private Product product;
+
+    public Cart(int quantity, User user, Product product) {
+        this.quantity = quantity;
+        this.user = user;
+        this.product = product;
+    }
 }

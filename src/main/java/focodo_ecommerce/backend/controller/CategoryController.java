@@ -3,6 +3,7 @@ package focodo_ecommerce.backend.controller;
 import focodo_ecommerce.backend.dto.CategoryDTO;
 import focodo_ecommerce.backend.dto.ProductDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +22,11 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public ApiResponse<List<CategoryDTO>> getAllCategory(
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size
+    public ApiResponse<PaginationObjectResponse> getAllCategory(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategories(page, size)).build();
+        return ApiResponse.<PaginationObjectResponse>builder().result(categoryService.getAllCategories(page, size)).build();
     }
 
     @GetMapping("/all")

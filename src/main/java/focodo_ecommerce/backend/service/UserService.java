@@ -1,12 +1,13 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.UserDTO;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.UserProfileRequest;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> getAllUsers(int page, int size);
+    PaginationObjectResponse getAllUsers(int page, int size);
 
     UserDTO getUser(String name);
 

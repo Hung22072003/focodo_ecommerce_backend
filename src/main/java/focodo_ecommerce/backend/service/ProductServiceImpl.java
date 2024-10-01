@@ -1,14 +1,14 @@
 package focodo_ecommerce.backend.service;
 
-import com.cloudinary.utils.ObjectUtils;
 import focodo_ecommerce.backend.dto.ProductDTO;
-import focodo_ecommerce.backend.entity.ImageReview;
 import focodo_ecommerce.backend.entity.Product;
 import focodo_ecommerce.backend.entity.ProductCategory;
 import focodo_ecommerce.backend.entity.ProductImage;
 import focodo_ecommerce.backend.entity.embeddedID.ProductCategoryId;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
+import focodo_ecommerce.backend.model.Pagination;
+import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.ProductRequest;
 import focodo_ecommerce.backend.repository.CategoryRepository;
 import focodo_ecommerce.backend.repository.ProductCategoryRepository;
@@ -43,8 +43,9 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<ProductDTO> getAllProduct(int page, int size) {
-        return productRepository.findAll(PageRequest.of(page, size, Sort.by("id"))).get().map(ProductDTO::new).toList();
+    public PaginationObjectResponse getAllProduct(int page, int size) {
+        Page<Product> products = productRepository.findAll(PageRequest.of(page, size, Sort.by("id")));
+        return PaginationObjectResponse.builder().data(products.get().map(ProductDTO::new).toList()).pagination(new Pagination(products.getTotalElements(), products.getTotalPages(), products.getNumber())).build();
     }
     @Override
     public List<ProductDTO> getAllProductNotPaginated() {
@@ -57,15 +58,16 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<ProductDTO> getProductsByCategory(int page, int size, int id) {
+    public PaginationObjectResponse getProductsByCategory(int page, int size, int id) {
         Page<Product> products = productRepository.findProductsByCategory(id, PageRequest.of(page, size, Sort.by("id").descending()));
-        return products.get().map(ProductDTO::new).toList();
+        return PaginationObjectResponse.builder().data(products.get().map(ProductDTO::new).toList()).pagination(new Pagination(products.getTotalElements(), products.getTotalPages(), products.getNumber())).build();
     }
 
     @Override
-    public List<ProductDTO> searchProducts(String query, int page, int size) {
-        if(query.isEmpty()) return List.of();
-        return productRepository.findByNameContaining(query, PageRequest.of(page, size, Sort.by("id").descending())).stream().map(ProductDTO::new).toList();
+    public PaginationObjectResponse searchProducts(String query, int page, int size) {
+        if(query.isEmpty()) return null ;
+        Page<Product> products = productRepository.findByNameContaining(query, PageRequest.of(page, size, Sort.by("id").descending()));
+        return PaginationObjectResponse.builder().data(products.get().map(ProductDTO::new).toList()).pagination(new Pagination(products.getTotalElements(), products.getTotalPages(), products.getNumber())).build();
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
