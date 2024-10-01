@@ -1,0 +1,13 @@
+package focodo_ecommerce.backend.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CartRequest {
+    private int id_product;
+    private int quantity;
+}
