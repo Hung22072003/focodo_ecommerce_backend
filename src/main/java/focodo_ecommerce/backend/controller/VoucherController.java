@@ -10,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/vouchers")
 @RequiredArgsConstructor
+@CrossOrigin
 public class VoucherController {
 
     private final VoucherService voucherService;
@@ -46,5 +47,12 @@ public class VoucherController {
     public ApiResponse<String> deleteVoucher(@PathVariable String id) {
         voucherService.deleteVoucher(id);
         return ApiResponse.<String>builder().result("Delete voucher successfully").build();
+    }
+
+    @GetMapping("/checkVoucher/{id}")
+    public ApiResponse<Boolean> checkVoucher(
+            @PathVariable("id") String id
+    ) {
+        return ApiResponse.<Boolean>builder().result(voucherService.checkVoucher(id)).build();
     }
 }

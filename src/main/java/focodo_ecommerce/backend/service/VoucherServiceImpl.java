@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -20,7 +19,7 @@ public class VoucherServiceImpl implements VoucherService{
     private final VoucherRepository voucherRepository;
     @Override
     public List<VoucherDTO> getAllVoucher() {
-        return voucherRepository.findAll().stream().filter((voucher) -> !voucher.isExpired()).map(VoucherDTO::new).toList();
+        return voucherRepository.findAll().stream().filter((voucher) -> !voucher.getEnd_date().isBefore(LocalDate.now())).map(VoucherDTO::new).toList();
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
@@ -35,6 +34,12 @@ public class VoucherServiceImpl implements VoucherService{
     }
 
     @Override
+    public Boolean checkVoucher(String id) {
+        Voucher voucher = voucherRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.VOUCHER_NOT_FOUND));
+        return !voucher.getEnd_date().isBefore(LocalDate.now()) && voucher.getQuantity() != 0;
+    }
+
+    @Override
     public VoucherDTO getVoucherById(String id) {
         return new VoucherDTO(voucherRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.VOUCHER_NOT_FOUND)));
     }
@@ -42,8 +47,6 @@ public class VoucherServiceImpl implements VoucherService{
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public VoucherDTO saveVoucher(VoucherDTO voucherDTO) {
-        LocalDate end_date = LocalDate.parse(voucherDTO.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        voucherDTO.setExpired(end_date.isBefore(LocalDate.now()));
         voucherRepository.save(new Voucher(voucherDTO));
         return voucherDTO;
     }

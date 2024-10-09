@@ -26,7 +26,6 @@ public class Voucher {
     private int quantity;
     private Long min_total;
     private Long discount_price;
-    private boolean expired;
 
     public Voucher(VoucherDTO voucherDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -36,6 +35,5 @@ public class Voucher {
         this.quantity = voucherDTO.getQuantity();
         this.min_total = voucherDTO.getMin_total();
         this.discount_price = voucherDTO.getDiscount_price();
-        this.expired = voucherDTO.isExpired();
     }
 }

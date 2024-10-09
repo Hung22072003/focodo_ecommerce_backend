@@ -14,7 +14,6 @@ public class VoucherDTO {
     private int quantity;
     private Long min_total;
     private Long discount_price;
-    private boolean expired;
 
     public VoucherDTO(Voucher voucher) {
         this.id_voucher = voucher.getId_voucher();
@@ -23,6 +22,5 @@ public class VoucherDTO {
         this.quantity = voucher.getQuantity();
         this.min_total = voucher.getMin_total();
         this.discount_price = voucher.getDiscount_price();
-        this.expired = voucher.isExpired();
     }
 }
