@@ -25,12 +25,32 @@ public class CartServiceImpl implements CartService{
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     @Override
-    public CartDTO addCart(CartRequest cartRequest) {
+    @Transactional
+    public void addCart(CartRequest cartRequest) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        List<Cart> existCarts = user.getCarts();
         Product product = productRepository.findById(cartRequest.getId_product()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        Cart newCart = new Cart(cartRequest.getQuantity(), user, product);
-        return new CartDTO(cartRepository.save(newCart));
+        int quantity = product.getPackage_quantity() * cartRequest.getQuantity();
+        if(product.getQuantity() < quantity) throw new RuntimeException("Product is not enough quantity");
+        boolean isExistProduct = false;
+        for(Cart cart : existCarts) {
+            if(cart.getProduct().equals(product)) {
+                isExistProduct = true;
+                break;
+            }
+        }
+        if(isExistProduct) {
+            user.setCarts(existCarts.stream().map((cart) -> {
+                if(cart.getProduct().equals(product)) cart.setQuantity(cart.getQuantity() + cartRequest.getQuantity());
+                return cart;
+            }).toList());
+        }
+        else {
+            Cart newCart = new Cart(cartRequest.getQuantity(), user, product);
+            cartRepository.save(newCart);
+        }
+        product.setQuantity(product.getQuantity() - quantity);
     }
 
     @Override
@@ -42,14 +62,39 @@ public class CartServiceImpl implements CartService{
 
     @Override
     @Transactional
-    public CartDTO updateCart(int id, int quantity) {
+    public CartDTO updateCart(int id) {
         Cart foundCart = cartRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
-        foundCart.setQuantity(quantity);
+        foundCart.setCheck(!foundCart.getCheck());
         return new CartDTO(foundCart);
     }
 
     @Override
+    @Transactional
     public void deleteCart(int id) {
+        Cart foundCart = cartRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+        Product product = foundCart.getProduct();
+        product.setQuantity(product.getQuantity() + product.getPackage_quantity() * foundCart.getQuantity());
         cartRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public CartDTO increaseQuantityCart(int id) {
+        Cart foundCart = cartRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+        Product product = foundCart.getProduct();
+        if(product.getQuantity() < product.getPackage_quantity()) throw new RuntimeException("Product is not enough quantity");
+        foundCart.setQuantity(foundCart.getQuantity() + 1);
+        product.setQuantity(product.getQuantity() - product.getPackage_quantity());
+        return new CartDTO(foundCart);
+    }
+
+    @Override
+    @Transactional
+    public CartDTO decreaseQuantityCart(int id) {
+        Cart foundCart = cartRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+        Product product = foundCart.getProduct();
+        foundCart.setQuantity(foundCart.getQuantity() - 1);
+        product.setQuantity(product.getQuantity() + product.getPackage_quantity());
+        return new CartDTO(foundCart);
     }
 }

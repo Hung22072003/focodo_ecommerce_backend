@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "cart")
@@ -17,7 +18,8 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_cart;
     private int quantity;
-
+    @Column(name = "`check`")
+    private Boolean check = false;
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
@@ -29,5 +31,6 @@ public class Cart {
         this.quantity = quantity;
         this.user = user;
         this.product = product;
+        this.check = false;
     }
 }

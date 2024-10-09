@@ -14,13 +14,17 @@ public class CartDTO {
     private String product_name;
     private int quantity;
     private Long unit_price;
+    private Long original_price;
     private String image;
+    private Boolean check;
     public CartDTO(Cart cart) {
         this.id_cart = cart.getId_cart();
         this.id_product = cart.getProduct().getId();
         this.product_name = cart.getProduct().getName();
         this.quantity = cart.getQuantity();
         this.unit_price = cart.getProduct().getOriginal_price();
+        this.original_price = cart.getProduct().getOriginal_price();
         this.image = cart.getProduct().getProductImageList().get(0).getImage();
+        this.check = cart.getCheck();
     }
 }

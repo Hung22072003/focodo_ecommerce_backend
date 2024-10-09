@@ -6,11 +6,15 @@ import focodo_ecommerce.backend.model.CartRequest;
 import java.util.List;
 
 public interface CartService {
-    CartDTO addCart(CartRequest cartRequest);
+    void addCart(CartRequest cartRequest);
 
     List<CartDTO> getCartOfUser();
 
-    CartDTO updateCart(int id, int quantity);
+    CartDTO updateCart(int id);
 
     void deleteCart(int id);
+
+    CartDTO increaseQuantityCart(int id);
+
+    CartDTO decreaseQuantityCart(int id);
 }

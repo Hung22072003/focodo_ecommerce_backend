@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
+@CrossOrigin
 public class CartController {
     private final CartService cartService;
 
@@ -20,16 +21,30 @@ public class CartController {
         return ApiResponse.<List<CartDTO>>builder().result(cartService.getCartOfUser()).build();
     }
     @PostMapping("/addCart")
-    public ApiResponse<CartDTO> addCart(@RequestBody CartRequest cartRequest) {
-        return ApiResponse.<CartDTO>builder().result(cartService.addCart(cartRequest)).build();
+    public void addCart(@RequestBody CartRequest cartRequest) {
+        cartService.addCart(cartRequest);
     }
+
 
     @PutMapping("/updateCart/{id}")
     public ApiResponse<CartDTO> updateCart(
-        @PathVariable("id") int id,
-        @RequestParam("quantity") int quantity
+            @PathVariable("id") int id
     ) {
-        return ApiResponse.<CartDTO>builder().result(cartService.updateCart(id, quantity)).build();
+        return ApiResponse.<CartDTO>builder().result(cartService.updateCart(id)).build();
+    }
+
+    @PutMapping("/increaseQuantityCart/{id}")
+    public ApiResponse<CartDTO> increaseQuantityCart(
+        @PathVariable("id") int id
+    ) {
+        return ApiResponse.<CartDTO>builder().result(cartService.increaseQuantityCart(id)).build();
+    }
+
+    @PutMapping("/decreaseQuantityCart/{id}")
+    public ApiResponse<CartDTO> decreaseQuantityCart(
+            @PathVariable("id") int id
+    ) {
+        return ApiResponse.<CartDTO>builder().result(cartService.decreaseQuantityCart(id)).build();
     }
 
     @DeleteMapping("/deleteCart/{id}")
