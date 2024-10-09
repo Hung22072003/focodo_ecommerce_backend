@@ -1,7 +1,6 @@
 package focodo_ecommerce.backend.controller;
 
 import focodo_ecommerce.backend.dto.CategoryDTO;
-import focodo_ecommerce.backend.dto.ProductDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
 import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.service.CategoryService;
@@ -13,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
+@CrossOrigin
 public class CategoryController {
     private final CategoryService categoryService;
     @GetMapping("/getAllCategories")
@@ -40,5 +40,21 @@ public class CategoryController {
             @PathVariable("id") int id
     ) {
         return ApiResponse.<CategoryDTO>builder().result(categoryService.getCategoryById(id)).build();
+    }
+
+    @PostMapping("/addProductToCategory/{id_category}")
+    public void addProductToCategory(
+            @PathVariable("id_category") int id_category,
+            @RequestParam("id_product") int id_product
+    ) {
+        categoryService.addProductToCategory(id_category, id_product);
+    }
+
+    @DeleteMapping("/removeProductFromCategory/{id_category}")
+    public void removeProductFromCategory(
+            @PathVariable("id_category") int id_category,
+            @RequestParam("id_product") int id_product
+    ) {
+        categoryService.removeProductFromCategory(id_category, id_product);
     }
 }

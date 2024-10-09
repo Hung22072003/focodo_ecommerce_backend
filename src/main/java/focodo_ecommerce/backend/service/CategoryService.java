@@ -15,4 +15,8 @@ public interface CategoryService {
     CategoryDTO getCategoryById(int id);
 
     List<CategoryDTO> getAllCategoriesNotPaginated();
+
+    void addProductToCategory(int idCategory, int idProduct);
+
+    void removeProductFromCategory(int idCategory, int idProduct);
 }
