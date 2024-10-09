@@ -1,5 +1,6 @@
 package focodo_ecommerce.backend.entity;
 
+import focodo_ecommerce.backend.model.OrderDetailRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,6 @@ public class OrderDetail {
     private int quantity;
     private Long unit_price;
     private Long total_price;
-    private String image;
 
     @ManyToOne
     @JoinColumn(name = "id_product")

@@ -1,5 +1,6 @@
 package focodo_ecommerce.backend.entity;
 
+import focodo_ecommerce.backend.model.CustomerRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,4 +28,13 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders;
+
+    public Customer(CustomerRequest customerRequest) {
+        this.full_name = customerRequest.getFull_name();
+        this.phone = customerRequest.getPhone();
+        this.address = customerRequest.getAddress();
+        this.province = customerRequest.getProvince();
+        this.district = customerRequest.getDistrict();
+        this.ward = customerRequest.getWard();
+    }
 }

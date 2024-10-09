@@ -18,8 +18,10 @@ public enum ErrorCode {
     OTP_EXPIRED(1011, "Otp is expired"),
     OLD_PASSWORD_NOT_CORRECT(1012, "Old password is not correct"),
     PASSWORD_INVALID(1013, "Password has length at least 6"),
-    CART_NOT_FOUND(1014, "Cart not found");
-
+    CART_NOT_FOUND(1014, "Cart not found"),
+    PAYMENT_METHOD_NOT_FOUND(1015, "Payment method not found"),
+    ORDER_NOT_FOUND(1016, "Order not found"),
+    ORDER_STATUS_NOT_FOUND(1017, "Order status not found");
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
