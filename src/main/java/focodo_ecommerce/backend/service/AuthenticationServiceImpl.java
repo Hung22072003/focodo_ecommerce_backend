@@ -15,6 +15,7 @@ import focodo_ecommerce.backend.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,8 +68,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
     @Override
     public AuthenticationResponse refreshToken(String token){
-        String email = jwtService.extractUsername(token);
-        UserDetails user = userDetailsService.loadUserByUsername(email);
+        String username = jwtService.extractUsername(token);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
         if(jwtService.isTokenValid(token, user)) {
             var jwtToken = jwtService.generateToken(user);
             var jwtRefreshToken = jwtService.generateRefreshToken(user);
@@ -122,5 +123,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Integer generateOtp() {
         Random random = new Random();
         return random.nextInt(100000, 999999);
+    }
+
+    @Override
+    public String checkRoleToken(String token) {
+        String username = jwtService.extractUsername(token);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        if(jwtService.isTokenValid(token, user)) {
+            return user.getAuthorities().toString();
+        } else {
+            throw new AppException(ErrorCode.TOKEN_EXPIRED);
+        }
+    }
+
+    @Override
+    public Boolean checkAdminRoleToken(String token) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        String username = jwtService.extractUsername(token);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        if(jwtService.isTokenValid(token, user)) {
+            return !user.getAuthorities().stream().filter((grantedAuthority) -> grantedAuthority.getAuthority().equals("ADMIN")).toList().isEmpty();
+        } else {
+            throw new AppException(ErrorCode.TOKEN_EXPIRED);
+        }
     }
 }
