@@ -16,15 +16,15 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReviewDTO {
     private int id;
-    private int id_product;
     private int rating;
     private String content;
     private LocalDateTime date;
+    private ProductDTO product;
     private UserDTO user;
     private List<String> images;
     public ReviewDTO(Review saveReview) {
         this.id = saveReview.getId();
-        this.id_product = saveReview.getProduct().getId();
+        this.product = new ProductDTO(saveReview.getProduct());
         this.rating = saveReview.getRating();
         this.content = saveReview.getContent();
         this.date = saveReview.getDate();
