@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public UserDTO getUser(int id) {
         return new UserDTO(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
