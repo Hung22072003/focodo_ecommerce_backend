@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductDTO {
+public class ProductDetailDTO {
     private int id;
     private String name;
     private Long original_price;
@@ -25,9 +25,10 @@ public class ProductDTO {
     private int package_quantity;
     private int quantity;
     private ReviewResponse review;
+    private List<CategoryDTO> categories;
     private List<String> images;
 
-    public ProductDTO(Product saveProduct) {
+    public ProductDetailDTO(Product saveProduct) {
         this.id = saveProduct.getId();
         this.name = saveProduct.getName();
         this.original_price = saveProduct.getOriginal_price();
@@ -37,6 +38,7 @@ public class ProductDTO {
         this.discount = saveProduct.getDiscount();
         this.package_quantity = saveProduct.getPackage_quantity();
         this.quantity = saveProduct.getQuantity();
+        this.categories = saveProduct.getProductCategories().stream().map(productCategory -> new CategoryDTO(productCategory.getCategory())).toList();
         this.images = (saveProduct.getProductImageList() != null) ? saveProduct.getProductImageList().stream().map(ProductImage::getImage).toList() : List.of();
         this.review = (saveProduct.getReviews() != null) ? new ReviewResponse(saveProduct.getReviews()) : null;
     }

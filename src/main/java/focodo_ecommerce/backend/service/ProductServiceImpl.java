@@ -1,6 +1,7 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.ProductDTO;
+import focodo_ecommerce.backend.dto.ProductDetailDTO;
 import focodo_ecommerce.backend.entity.Product;
 import focodo_ecommerce.backend.entity.ProductCategory;
 import focodo_ecommerce.backend.entity.ProductImage;
@@ -37,9 +38,9 @@ public class ProductServiceImpl implements ProductService{
     private final CloudinaryService cloudinaryService;
 
     @Override
-    public ProductDTO getProductById(int id) {
+    public ProductDetailDTO getProductById(int id) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        return new ProductDTO(foundProduct);
+        return new ProductDetailDTO(foundProduct);
     }
 
     @Override
@@ -83,16 +84,16 @@ public class ProductServiceImpl implements ProductService{
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     @Transactional
-    public ProductDTO updateDescriptionProduct(int id, String subDescription, String mainDescription) {
+    public ProductDetailDTO updateDescriptionProduct(int id, String subDescription, String mainDescription) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         if(subDescription != null) foundProduct.setSub_description(subDescription);
         if(mainDescription != null) foundProduct.setMain_description(mainDescription);
-        return new ProductDTO(foundProduct);
+        return new ProductDetailDTO(foundProduct);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
-    public ProductDTO createProduct(ProductRequest productRequest, List<MultipartFile> images) {
+    public ProductDetailDTO createProduct(ProductRequest productRequest, List<MultipartFile> images) {
         if(productRepository.existsByName(productRequest.getName())) throw new AppException(ErrorCode.PRODUCT_EXIST);
         Product product = new Product(productRequest.getName(), productRequest.getOriginal_price(), productRequest.getSell_price(), productRequest.getDiscount(), productRequest.getSub_description(), productRequest.getMain_description(), productRequest.getQuantity(), productRequest.getPackage_quantity());
         Product saveProduct = productRepository.save(product);
@@ -106,7 +107,7 @@ public class ProductServiceImpl implements ProductService{
             });
         }
 
-        ProductDTO productDTO = new ProductDTO(saveProduct);
+        ProductDetailDTO productDTO = new ProductDetailDTO(saveProduct);
         if(images != null ) {
             List<String> productImages = cloudinaryService.uploadMultipleFiles(images, folderName);
             List<ProductImage> productSavedImages = productImages.stream().map((image) -> new ProductImage(image, saveProduct)).toList();
@@ -117,7 +118,7 @@ public class ProductServiceImpl implements ProductService{
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
-    public ProductDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> files, List<String> images) {
+    public ProductDetailDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> files, List<String> images) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         foundProduct.setName(productRequest.getName());
         foundProduct.setOriginal_price(productRequest.getOriginal_price());
@@ -151,8 +152,6 @@ public class ProductServiceImpl implements ProductService{
 
         foundProduct.setProductImageList(newImages);
         productRepository.save(foundProduct);
-        return new ProductDTO(foundProduct);
+        return new ProductDetailDTO(foundProduct);
     }
-
-
 }
