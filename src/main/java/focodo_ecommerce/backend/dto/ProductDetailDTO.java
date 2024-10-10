@@ -38,7 +38,7 @@ public class ProductDetailDTO {
         this.discount = saveProduct.getDiscount();
         this.package_quantity = saveProduct.getPackage_quantity();
         this.quantity = saveProduct.getQuantity();
-        this.categories = saveProduct.getProductCategories().stream().map(productCategory -> new CategoryDTO(productCategory.getCategory())).toList();
+        this.categories = (saveProduct.getProductCategories() != null) ? saveProduct.getProductCategories().stream().map(productCategory -> new CategoryDTO(productCategory.getCategory())).toList() : null;
         this.images = (saveProduct.getProductImageList() != null) ? saveProduct.getProductImageList().stream().map(ProductImage::getImage).toList() : List.of();
         this.review = (saveProduct.getReviews() != null) ? new ReviewResponse(saveProduct.getReviews()) : null;
     }
