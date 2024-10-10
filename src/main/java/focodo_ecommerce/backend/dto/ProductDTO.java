@@ -32,6 +32,6 @@ public class ProductDTO {
         this.sold_quantity = product.getSold_quantity();
         this.discount = product.getDiscount();
         this.review = (double) product.getReviews().stream().map(Review::getRating).reduce(0, Integer::sum) / product.getReviews().size();
-        this.image = product.getProductImageList().get(0).getImage();
+        this.image = (!product.getProductImageList().isEmpty()) ? product.getProductImageList().get(0).getImage() : null;
     }
 }
