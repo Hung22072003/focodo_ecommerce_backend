@@ -2,10 +2,12 @@ package focodo_ecommerce.backend.controller;
 
 import focodo_ecommerce.backend.dto.CategoryDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
+import focodo_ecommerce.backend.model.CategoryRequest;
 import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,7 +36,6 @@ public class CategoryController {
     ) {
         return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategoriesNotPaginated()).build();
     }
-
     @GetMapping("/getCategoryById/{id}")
     public ApiResponse<CategoryDTO> getCategoryById(
             @PathVariable("id") int id
@@ -42,6 +43,30 @@ public class CategoryController {
         return ApiResponse.<CategoryDTO>builder().result(categoryService.getCategoryById(id)).build();
     }
 
+    @PostMapping("/create")
+    public ApiResponse<CategoryDTO> createCategory(
+             @RequestPart("category")CategoryRequest category,
+             @RequestParam(name = "image", required = false)MultipartFile image
+    ) {
+        return ApiResponse.<CategoryDTO>builder().result(categoryService.createCategory(category, image)).build();
+    }
+
+
+    @PutMapping("/update/{id}")
+    public ApiResponse<CategoryDTO> updateCategory(
+            @PathVariable("id")int id,
+            @RequestPart("category")CategoryRequest category,
+            @RequestParam(name = "image", required = false)MultipartFile image
+    ) {
+        return ApiResponse.<CategoryDTO>builder().result(categoryService.updateCategory(id, category, image)).build();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteCategory(
+            @PathVariable("id")int id
+    ) {
+        categoryService.deleteCategory(id);
+    }
     @PostMapping("/addProductToCategory/{id_category}")
     public void addProductToCategory(
             @PathVariable("id_category") int id_category,

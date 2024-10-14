@@ -28,6 +28,17 @@ public class CloudinaryService {
         ImageIO.write(image, "jpg", byteArrayOutputStream);  // Chuyển ảnh sang định dạng JPG nén
         return byteArrayOutputStream.toByteArray();
     }
+
+    public String uploadOneFile(MultipartFile file, String folderName) {
+        Map result = null;
+        try {
+            result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", folderName,
+                    "resource_type", "image"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result.get("secure_url").toString();
+    }
     public List<String> uploadMultipleFiles(List<MultipartFile> files, String folderName) {
         List<CompletableFuture<String>> futures = files.stream()
                 .map(file -> CompletableFuture.supplyAsync(() -> {

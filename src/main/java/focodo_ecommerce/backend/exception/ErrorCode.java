@@ -21,7 +21,9 @@ public enum ErrorCode {
     CART_NOT_FOUND(1014, "Cart not found"),
     PAYMENT_METHOD_NOT_FOUND(1015, "Payment method not found"),
     ORDER_NOT_FOUND(1016, "Order not found"),
-    ORDER_STATUS_NOT_FOUND(1017, "Order status not found");
+    ORDER_STATUS_NOT_FOUND(1017, "Order status not found"),
+    NOTIFICATION_NOT_FOUND(1018, "Notification not found"),
+    CATEGORY_EXIST(1019, "Category already exists"),;
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;

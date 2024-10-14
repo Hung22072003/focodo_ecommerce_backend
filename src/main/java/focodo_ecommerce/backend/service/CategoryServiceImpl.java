@@ -6,6 +6,7 @@ import focodo_ecommerce.backend.entity.ProductCategory;
 import focodo_ecommerce.backend.entity.embeddedID.ProductCategoryId;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
+import focodo_ecommerce.backend.model.CategoryRequest;
 import focodo_ecommerce.backend.model.Pagination;
 import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.repository.CategoryRepository;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 @Service
@@ -24,6 +27,8 @@ public class CategoryServiceImpl implements CategoryService{
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductRepository productRepository;
+    private final CloudinaryService cloudinaryService;
+    private final String folderName = "focodo_ecommerce/category";
     @Override
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream().filter((category) -> category.getParent_category() == null).map(CategoryDTO::new).toList();
@@ -49,6 +54,39 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public void removeProductFromCategory(int idCategory, int idProduct) {
         productCategoryRepository.delete(productCategoryRepository.findById(new ProductCategoryId(idProduct, idCategory)).orElseThrow());
+    }
+
+    @Override
+    public CategoryDTO createCategory(CategoryRequest category, MultipartFile image) {
+        if(categoryRepository.existsByName(category.getName())) throw new AppException(ErrorCode.CATEGORY_EXIST);
+        Category newCategory = new Category();
+        newCategory.setName(category.getName());
+        newCategory.setDescription(category.getDescription());
+        newCategory.setParent_category(categoryRepository.findById(category.getParent_category()).orElse(null));
+        if(image != null) {
+            String categoryImage = cloudinaryService.uploadOneFile(image, folderName);
+            newCategory.setImage(categoryImage);
+        }
+        return new CategoryDTO(categoryRepository.save(newCategory));
+    }
+
+    @Override
+    public void deleteCategory(int id) {
+        categoryRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public CategoryDTO updateCategory(int id, CategoryRequest category, MultipartFile image) {
+        Category foundCategory = categoryRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        foundCategory.setName(category.getName());
+        foundCategory.setDescription(category.getDescription());
+        foundCategory.setParent_category(categoryRepository.findById(category.getParent_category()).orElse(null));
+        if(image != null) {
+            String categoryImage = cloudinaryService.uploadOneFile(image, folderName);
+            foundCategory.setImage(categoryImage);
+        }
+        return new CategoryDTO(foundCategory);
     }
 
     @Override

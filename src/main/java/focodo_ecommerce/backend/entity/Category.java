@@ -1,5 +1,6 @@
 package focodo_ecommerce.backend.entity;
 
+import focodo_ecommerce.backend.model.CategoryRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class Category {
     private String name;
     @Column(name = "image")
     private String image;
-    @Column(name = "description")
+    @Column(name = "description", length = 5000)
     private String description;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<ProductCategory> products;
