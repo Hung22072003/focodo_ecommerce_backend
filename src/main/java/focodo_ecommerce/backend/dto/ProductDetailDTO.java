@@ -23,6 +23,7 @@ public class ProductDetailDTO {
     private String main_description;
     private Double discount;
     private int package_quantity;
+    private int sold_quantity;
     private int quantity;
     private ReviewResponse review;
     private List<CategoryDTO> categories;
@@ -36,6 +37,7 @@ public class ProductDetailDTO {
         this.sub_description = saveProduct.getSub_description();
         this.main_description = saveProduct.getMain_description();
         this.discount = saveProduct.getDiscount();
+        this.sold_quantity = saveProduct.getSold_quantity();
         this.package_quantity = saveProduct.getPackage_quantity();
         this.quantity = saveProduct.getQuantity();
         this.categories = (saveProduct.getProductCategories() != null) ? saveProduct.getProductCategories().stream().map(productCategory -> new CategoryDTO(productCategory.getCategory())).toList() : null;
