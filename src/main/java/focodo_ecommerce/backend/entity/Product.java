@@ -29,6 +29,7 @@ public class Product {
     private int sold_quantity;
     private int package_quantity;
     private int quantity;
+    private boolean is_delete = false;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductCategory> productCategories;

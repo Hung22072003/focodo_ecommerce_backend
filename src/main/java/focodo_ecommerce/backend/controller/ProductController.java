@@ -49,6 +49,18 @@ public class ProductController {
         return ApiResponse.<PaginationObjectResponse>builder().result(productService.getProductsByCategory(page, size, id)).build();
     }
 
+    @GetMapping("/getProductsBestSeller")
+    public ApiResponse<List<ProductDTO>> getProductsBestSeller(
+    ) {
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsBestSeller()).build();
+    }
+
+    @GetMapping("/getProductsDiscount")
+    public ApiResponse<List<ProductDTO>> getProductsDiscount(
+    ) {
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsDiscount()).build();
+    }
+
     @GetMapping("/getProductsByCategory/{id}")
     public ApiResponse<List<ProductDTO>> getProductsByCategory(
             @PathVariable("id") int id

@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public PaginationObjectResponse getAllProduct(int page, int size) {
-        Page<Product> products = productRepository.findAll(PageRequest.of(page, size, Sort.by("id")));
+        Page<Product> products = productRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending()));
         return PaginationObjectResponse.builder().data(products.get().map(ProductDTO::new).toList()).pagination(new Pagination(products.getTotalElements(), products.getTotalPages(), products.getNumber())).build();
     }
     @Override
@@ -56,6 +56,18 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public List<ProductDTO> getProductsByCategory(int id) {
         return productRepository.findProductsByCategory(id).stream().map(ProductDTO::new).toList();
+    }
+
+    @Override
+    public List<ProductDTO> getProductsBestSeller() {
+        Page<Product> products = productRepository.findProductsBestSeller(PageRequest.of(0, 8, Sort.by("sold_quantity").descending()));
+        return products.get().map(ProductDTO::new).toList();
+    }
+
+    @Override
+    public List<ProductDTO> getProductsDiscount() {
+        Page<Product> products = productRepository.findProductsDiscount(PageRequest.of(0, 8, Sort.by("discount").descending()));
+        return products.get().map(ProductDTO::new).toList();
     }
 
     @Override
@@ -72,12 +84,10 @@ public class ProductServiceImpl implements ProductService{
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public void deleteProduct(int id) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        List<ProductImage> productImages = foundProduct.getProductImageList();
-        List<String> deleteImages = productImages.stream().map(ProductImage::getImage).toList();
-        cloudinaryService.deleteMultipleFiles(deleteImages, folderName);
-        productRepository.delete(foundProduct);
+        foundProduct.set_delete(true);
     }
 
 
@@ -126,6 +136,8 @@ public class ProductServiceImpl implements ProductService{
         foundProduct.setDiscount(productRequest.getDiscount());
         foundProduct.setQuantity(productRequest.getQuantity());
         foundProduct.setPackage_quantity(productRequest.getPackage_quantity());
+        foundProduct.setSub_description(productRequest.getSub_description());
+        foundProduct.setMain_description(productRequest.getMain_description());
         List<ProductImage> newImages = new ArrayList<ProductImage>();
         if(files != null ) {
             newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ProductImage(image, foundProduct)).toList());

@@ -27,4 +27,8 @@ public interface ProductService {
     List<ProductDTO> getAllProductNotPaginated();
 
     List<ProductDTO> getProductsByCategory(int id);
+
+    List<ProductDTO> getProductsBestSeller();
+
+    List<ProductDTO> getProductsDiscount();
 }

@@ -22,6 +22,7 @@ public class ProductDTO {
     private int sold_quantity;
     private double review;
     private String image;
+    private boolean is_delete;
 
     public ProductDTO(Product product) {
         this.id = product.getId();
@@ -31,6 +32,7 @@ public class ProductDTO {
         this.quantity = product.getQuantity();
         this.sold_quantity = product.getSold_quantity();
         this.discount = product.getDiscount();
+        this.is_delete = product.is_delete();
         this.review = (double) product.getReviews().stream().map(Review::getRating).reduce(0, Integer::sum) / product.getReviews().size();
         this.image = (!product.getProductImageList().isEmpty()) ? product.getProductImageList().get(0).getImage() : null;
     }
