@@ -19,7 +19,9 @@ public class UserDTO {
     private String province;
     private String district;
     private String ward;
+    private String role;
     private String username;
+    private String avatar;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -31,5 +33,7 @@ public class UserDTO {
         this.district = user.getDistrict();
         this.ward = user.getWard();
         this.username = user.getUsername();
+        this.role = user.getRole().toString();
+        this.avatar = user.getAvatar();
     }
 }

@@ -9,7 +9,9 @@ import focodo_ecommerce.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -50,6 +52,10 @@ public class UserController {
         return ApiResponse.<UserDTO>builder().result(userService.updateProfileUser(userProfileRequest)).build();
     }
 
+    @PutMapping("/updateAvatar")
+    public void updateAvatar(@RequestParam("avatar") MultipartFile avatar){
+        userService.updateAvatar(avatar);
+    }
     @PostMapping("/checkPassword")
     public ApiResponse<Boolean> checkPassword(
             @RequestParam(value = "password") String password

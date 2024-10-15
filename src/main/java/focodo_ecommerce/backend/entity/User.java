@@ -1,5 +1,6 @@
 package focodo_ecommerce.backend.entity;
 
+import focodo_ecommerce.backend.model.CustomerRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +30,7 @@ public class User implements UserDetails {
     private String ward;
     private String username;
     private String password;
+    private String avatar;
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -40,6 +42,16 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Order> orders;
+
+    public User(CustomerRequest customerRequest) {
+        this.full_name = customerRequest.getFull_name();
+        this.phone = customerRequest.getPhone();
+        this.address = customerRequest.getAddress();
+        this.province = customerRequest.getProvince();
+        this.district = customerRequest.getDistrict();
+        this.ward = customerRequest.getWard();
+        this.role = Role.CUSTOMER;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,14 +18,17 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
+    private final String folderName = "focodo_ecommerce/user";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     public PaginationObjectResponse getAllUsers(int page, int size) {
@@ -38,6 +41,15 @@ public class UserServiceImpl implements UserService{
     public List<UserDTO> getAllUsersNotPaginated() {
         return userRepository.findAll().stream().map(UserDTO::new).toList();
     }
+
+    @Override
+    @Transactional
+    public void updateAvatar(MultipartFile avatar) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        User foundUser = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        foundUser.setAvatar(cloudinaryService.uploadOneFile(avatar, folderName));
+    }
+
     @Override
     public UserDTO getUser(String name) {
         return new UserDTO(userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));

@@ -3,6 +3,7 @@ package focodo_ecommerce.backend.service;
 import focodo_ecommerce.backend.dto.UserDTO;
 import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.UserProfileRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface UserService {
     void updatePassword(String old_password, String password);
 
     List<UserDTO> getAllUsersNotPaginated();
+
+    void updateAvatar(MultipartFile avatar);
 }
