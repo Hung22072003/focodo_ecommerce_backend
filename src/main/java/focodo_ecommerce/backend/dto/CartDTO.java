@@ -22,7 +22,7 @@ public class CartDTO {
         this.id_product = cart.getProduct().getId();
         this.product_name = cart.getProduct().getName();
         this.quantity = cart.getQuantity();
-        this.unit_price = cart.getProduct().getOriginal_price();
+        this.unit_price = cart.getProduct().getSell_price();
         this.original_price = cart.getProduct().getOriginal_price();
         this.image = cart.getProduct().getProductImageList().get(0).getImage();
         this.check = cart.getCheck();
