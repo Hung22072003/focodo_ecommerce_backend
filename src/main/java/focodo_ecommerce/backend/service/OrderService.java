@@ -1,7 +1,9 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.OrderDTO;
+import focodo_ecommerce.backend.dto.OrderStatusDTO;
 import focodo_ecommerce.backend.dto.PaymentDTO;
+import focodo_ecommerce.backend.dto.PaymentMethodDTO;
 import focodo_ecommerce.backend.model.CustomerRequest;
 import focodo_ecommerce.backend.model.OrderRequest;
 import focodo_ecommerce.backend.model.PaginationObjectResponse;
@@ -25,4 +27,10 @@ public interface OrderService {
     PaginationObjectResponse getOrdersOfUser(int page, int size);
 
     PaginationObjectResponse getOrdersOfUserByOrderStatus(int page, int size, String status);
+
+    void updateReviewOfOrder(String id);
+
+    List<OrderStatusDTO> getAllOrderStatus();
+
+    List<PaymentMethodDTO> getAllPaymentMethod();
 }

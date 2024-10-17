@@ -24,8 +24,8 @@ public class OrderDTO {
     private String order_status;
     private String payment_status;
     private String payment_method;
-    private CustomerDTO customer;
-    private UserDTO user;
+    private boolean review_check;
+    private UserDTO customer;
     List<OrderDetailDTO> order_details;
 
     public OrderDTO(Order order) {
@@ -38,9 +38,9 @@ public class OrderDTO {
         this.order_date = order.getOrder_date();
         this.order_status = order.getOrderStatus().getStatus();
         this.payment_status = order.getPaymentStatus().getStatus();
+        this.review_check = order.is_check();
         this.payment_method = order.getPaymentMethod().getMethod();
-        this.customer = order.getCustomer() != null ? new CustomerDTO(order.getCustomer()) : null;
-        this.user = order.getUser() != null ? new UserDTO(order.getUser()) : null;
-        this.order_details = order.getOrderDetails().stream().map(OrderDetailDTO::new).toList();
+        this.customer = order.getUser() != null ? new UserDTO(order.getUser()) : null;
+        this.order_details = order.getOrderDetails() != null ? order.getOrderDetails().stream().map(OrderDetailDTO::new).toList() : List.of();
     }
 }

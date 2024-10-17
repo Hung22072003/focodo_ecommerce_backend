@@ -25,6 +25,7 @@ public class Order {
     private Long discount_price;
     private Long total_price;
     private Long final_price;
+    private boolean is_check = false;
 
     @ManyToOne
     @JoinColumn(name = "order_status_id")
@@ -39,15 +40,14 @@ public class Order {
     private PaymentMethod paymentMethod;
 
     @ManyToOne
-    @JoinColumn(name = "id_customer")
-    private Customer customer;
-
-    @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Notification notification;
 
     public Order(OrderRequest orderRequest) {
         this.description = orderRequest.getDescription();

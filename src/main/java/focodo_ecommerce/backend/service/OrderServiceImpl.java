@@ -1,7 +1,9 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.OrderDTO;
+import focodo_ecommerce.backend.dto.OrderStatusDTO;
 import focodo_ecommerce.backend.dto.PaymentDTO;
+import focodo_ecommerce.backend.dto.PaymentMethodDTO;
 import focodo_ecommerce.backend.entity.*;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
@@ -29,7 +31,6 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final CustomerRepository customerRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final PaymentStatusRepository paymentStatusRepository;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService{
     private final VoucherRepository voucherRepository;
     private final UserRepository userRepository;
     private final PaymentService paymentService;
+    private final NotificationService notificationService;
     @Override
     @Transactional
     public PaymentDTO createOrder(HttpServletRequest request, CustomerRequest customerRequest, OrderRequest orderRequest) {
@@ -68,22 +70,22 @@ public class OrderServiceImpl implements OrderService{
             cartRepository.deleteAllInBatch(carts);
             newOrder.setUser(foundUser);
         } else {
-            Customer customer = customerRepository.findByPhone(customerRequest.getPhone()).orElse(null);
-            if(customer == null) {
-                customer = customerRepository.save(new Customer(customerRequest));
+            User user = userRepository.findByPhone(customerRequest.getPhone()).orElse(null);
+            if(user == null) {
+                user = userRepository.save(new User(customerRequest));
             } else {
-                customer.setFull_name(customerRequest.getFull_name());
-                customer.setDistrict(customerRequest.getDistrict());
-                customer.setAddress(customerRequest.getAddress());
-                customer.setProvince(customerRequest.getProvince());
-                customer.setWard(customerRequest.getWard());
-                customer = customerRepository.save(customer);
+                user.setFull_name(customerRequest.getFull_name());
+                user.setDistrict(customerRequest.getDistrict());
+                user.setAddress(customerRequest.getAddress());
+                user.setProvince(customerRequest.getProvince());
+                user.setWard(customerRequest.getWard());
+                user = userRepository.save(user);
             }
             orderRequest.getDetails().forEach((order) -> {
                 Product product = productRepository.findById(order.getId_product()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
                 product.setQuantity(product.getQuantity() - product.getPackage_quantity() * order.getQuantity());
             });
-            newOrder.setCustomer(customer);
+            newOrder.setUser(user);
         }
         newOrder.setPaymentMethod(paymentMethod);
         newOrder.setOrderStatus(orderStatusRepository.findByStatus("Chưa xác nhận").orElseThrow(() -> new AppException(ErrorCode.ORDER_STATUS_NOT_FOUND)));
@@ -100,11 +102,12 @@ public class OrderServiceImpl implements OrderService{
         })).toList();
         orderDetailRepository.saveAll(orderDetails);
 
+        notificationService.createNotification(id_order);
         if(paymentMethod.getMethod().equals("VNPAY")) {
             return paymentService.createVnPayPayment(request, newOrder.getFinal_price(), newOrder.getId_order());
         }
 
-        return new PaymentDTO("ok", "success", "");
+        return new PaymentDTO("ok", "success", id_order, "");
     }
 
     @Override
@@ -120,6 +123,7 @@ public class OrderServiceImpl implements OrderService{
         Order order = orderRepository.findById(idOrder).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         order.setOrderStatus(orderStatusRepository.findById(status).orElse(null));
         if(status == 4) {
+            notificationService.createNotification(idOrder);
             for (OrderDetail orderDetail : order.getOrderDetails()) {
                 Product product = productRepository.findById(orderDetail.getProduct().getId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
                 product.setQuantity(product.getQuantity() + product.getPackage_quantity() * orderDetail.getQuantity());
@@ -165,6 +169,7 @@ public class OrderServiceImpl implements OrderService{
                     product.setSold_quantity(product.getSold_quantity() + product.getPackage_quantity() * orderDetail.getQuantity());
                 }
             } else if(status.equals("Đã hủy")) {
+                notificationService.createNotification(id);
                 for (OrderDetail orderDetail : order.getOrderDetails()) {
                     Product product = productRepository.findById(orderDetail.getProduct().getId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
                     product.setQuantity(product.getQuantity() + product.getPackage_quantity() * orderDetail.getQuantity());
@@ -186,7 +191,24 @@ public class OrderServiceImpl implements OrderService{
     public PaginationObjectResponse getOrdersOfUserByOrderStatus(int page, int size, String status) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        Page<Order> orders = orderRepository.findAllByUserAndOrderStatus(user, status, PageRequest.of(page, size, Sort.by("order_date").descending()));
+        Page<Order> orders = orderRepository.findAllByUserAndOrderStatus(user, status.trim(), PageRequest.of(page, size, Sort.by("order_date").descending()));
         return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
+    }
+
+    @Override
+    @Transactional
+    public void updateReviewOfOrder(String id) {
+        Order foundOrder = orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if(foundOrder.getOrderStatus().getStatus().equals("Đã giao")) foundOrder.set_check(true);
+    }
+
+    @Override
+    public List<OrderStatusDTO> getAllOrderStatus() {
+        return orderStatusRepository.findAll().stream().map(OrderStatusDTO::new).toList();
+    }
+
+    @Override
+    public List<PaymentMethodDTO> getAllPaymentMethod() {
+        return paymentMethodRepository.findAll().stream().map(PaymentMethodDTO::new).toList();
     }
 }

@@ -1,7 +1,9 @@
 package focodo_ecommerce.backend.controller;
 
 import focodo_ecommerce.backend.dto.OrderDTO;
+import focodo_ecommerce.backend.dto.OrderStatusDTO;
 import focodo_ecommerce.backend.dto.PaymentDTO;
+import focodo_ecommerce.backend.dto.PaymentMethodDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
 import focodo_ecommerce.backend.model.CustomerRequest;
 import focodo_ecommerce.backend.model.OrderRequest;
@@ -50,6 +52,13 @@ public class OrderController {
         return ApiResponse.<OrderDTO>builder().result(orderService.updateOrderStatus(id, status)).build();
     }
 
+    @PutMapping("/updateReviewOfOrder/{id}")
+    public void updateReview(
+            @PathVariable("id") String id
+    ) {
+        orderService.updateReviewOfOrder(id);
+    }
+
     @GetMapping("/getOrdersOfUser")
     public ApiResponse<PaginationObjectResponse> getOrdersOfUser(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -58,8 +67,19 @@ public class OrderController {
         return ApiResponse.<PaginationObjectResponse>builder().result(orderService.getOrdersOfUser(page, size)).build();
     }
 
+    @GetMapping("/getAllOrderStatus")
+    public ApiResponse<List<OrderStatusDTO>> getAllOrderStatus(
+    ) {
+        return ApiResponse.<List<OrderStatusDTO>>builder().result(orderService.getAllOrderStatus()).build();
+    }
+
+    @GetMapping("/getAllPaymentMethod")
+    public ApiResponse<List<PaymentMethodDTO>> getAllPaymentMethod(
+    ) {
+        return ApiResponse.<List<PaymentMethodDTO>>builder().result(orderService.getAllPaymentMethod()).build();
+    }
     @GetMapping("/getOrdersOfUserByOrderStatus")
-    public ApiResponse<PaginationObjectResponse> getPurchaseHistory(
+    public ApiResponse<PaginationObjectResponse> getOrdersOfUserByOrderStatus(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "status") String status
