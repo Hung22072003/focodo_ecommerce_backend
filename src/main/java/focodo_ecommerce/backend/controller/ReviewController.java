@@ -47,6 +47,14 @@ public class ReviewController {
     ) {
         return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getReviewsOfProduct(id)).build();
     }
+
+    @GetMapping("/getReviewsOfUser")
+    public ApiResponse<PaginationObjectResponse> getReviewsOfUser(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getReviewsOfUser(page, size)).build();
+    }
     @PostMapping("/create")
     public ApiResponse<ReviewDTO> createReview(
             @RequestParam(name = "images", required = false) List<MultipartFile> images,
@@ -67,8 +75,7 @@ public class ReviewController {
 
     @DeleteMapping("delete/{id}")
     public ApiResponse<String> deleteReview(
-            @PathVariable("id") int id,
-            Principal principal
+            @PathVariable("id") int id
     ) {
         reviewService.deleteReview(id);
         return ApiResponse.<String>builder().result("Delete review successfully").build();

@@ -1,7 +1,9 @@
 package focodo_ecommerce.backend.repository;
 
 import focodo_ecommerce.backend.entity.Review;
+import focodo_ecommerce.backend.entity.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -21,4 +23,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>, JpaSpe
 
     @Query("select r from Review r where r.product.id = :id_product and r.rating = :rating")
     Page<Review> findReviewsByProductAndRating(@Param("id_product") int id_product, @Param("rating") int rating, Pageable pageable);
+    @Query("select r from Review r where r.user = :user")
+    Page<Review> findReviewsByUser(@Param("user")User user, Pageable pageable);
 }

@@ -3,6 +3,7 @@ package focodo_ecommerce.backend.service;
 import focodo_ecommerce.backend.dto.ReviewDTO;
 import focodo_ecommerce.backend.entity.ImageReview;
 import focodo_ecommerce.backend.entity.Review;
+import focodo_ecommerce.backend.entity.User;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
 import focodo_ecommerce.backend.model.Pagination;
@@ -135,5 +136,13 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public List<ReviewDTO> getReviewsOfProduct(int id) {
         return reviewRepository.findReviewsByProduct(id).stream().sorted(Comparator.comparing(Review::getDate).reversed()).map(ReviewDTO::new).toList();
+    }
+
+    @Override
+    public PaginationObjectResponse getReviewsOfUser(int page, int size) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Page<Review> reviews = reviewRepository.findReviewsByUser(user, PageRequest.of(page, size, Sort.by("date").descending()));
+        return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(), reviews.getTotalPages(), reviews.getNumber())).build();
     }
 }

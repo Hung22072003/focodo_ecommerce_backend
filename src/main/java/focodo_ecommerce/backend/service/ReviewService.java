@@ -21,4 +21,6 @@ public interface ReviewService {
     List<ReviewDTO> getAllReviewsNotPaginated();
 
     List<ReviewDTO> getReviewsOfProduct(int id);
+
+    PaginationObjectResponse getReviewsOfUser(int page, int size);
 }
