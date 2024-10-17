@@ -33,7 +33,7 @@ public class PaymentController {
         if (status.equals("00")) {
             orderService.setPaymentStatus(id_order, 1);
 //            response.sendRedirect("http://localhost:4200/info-student");
-            return ApiResponse.<PaymentDTO>builder().result(new PaymentDTO("00", "Success", "")).build();
+            return ApiResponse.<PaymentDTO>builder().result(new PaymentDTO("00", "Success",id_order, "")).build();
         } else {
             orderService.setPaymentStatus(id_order, 2);
             orderService.setOrderStatus(id_order, 4);

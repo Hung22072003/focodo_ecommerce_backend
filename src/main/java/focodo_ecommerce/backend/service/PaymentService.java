@@ -26,6 +26,6 @@ public class PaymentService {
         String vnpSecureHash = VNPayUtil.hmacSHA512(vnpayConfig.getSecretKey(), hashData);
         queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
         String paymentUrl = vnpayConfig.getVnp_PayUrl() + "?" + queryUrl;
-        return new PaymentDTO("ok", "success", paymentUrl);
+        return new PaymentDTO("ok", "success", id_order, paymentUrl);
     }
 }

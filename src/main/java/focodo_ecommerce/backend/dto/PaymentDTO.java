@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class PaymentDTO {
     private String code;
     private String message;
+    private String id_order;
     private String payment_url;
 }
