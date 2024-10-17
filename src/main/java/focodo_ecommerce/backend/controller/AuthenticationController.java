@@ -30,6 +30,10 @@ public class AuthenticationController {
         return ApiResponse.<AuthenticationResponse>builder().result(authenticationService.authenticate(request)).build();
     }
 
+    @GetMapping("/checkTokenExpired")
+    public ApiResponse<Boolean> checkTokenExpired(@RequestParam String token) {
+        return ApiResponse.<Boolean>builder().result(authenticationService.checkTokenExpired(token)).build();
+    }
     @GetMapping("/checkAdminRoleToken")
     public ApiResponse<Boolean> checkAdminRoleToken(
             @RequestParam("token") String token

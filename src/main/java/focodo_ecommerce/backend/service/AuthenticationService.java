@@ -20,4 +20,6 @@ public interface AuthenticationService {
     String checkRoleToken(String token);
 
     Boolean checkAdminRoleToken(String token);
+
+    Boolean checkTokenExpired(String token);
 }

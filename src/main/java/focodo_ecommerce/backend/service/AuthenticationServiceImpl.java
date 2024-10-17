@@ -40,15 +40,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new AppException(ErrorCode.USER_EXIST);
         }
-        var user = User.builder()
-                .full_name(request.getFull_name())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
-        userRepository.save(user);
+        User user = userRepository.findByPhone(request.getPhone()).orElse(null);
+        if(user != null) {
+            user.setUsername(request.getUsername());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setEmail(request.getEmail());
+            user.setFull_name(request.getFull_name());
+            user.setRole(Role.USER);
+            userRepository.save(user);
+        } else {
+            user = User.builder()
+                    .full_name(request.getFull_name())
+                    .email(request.getEmail())
+                    .phone(request.getPhone())
+                    .username(request.getUsername())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.USER)
+                    .build();
+            userRepository.save(user);
+        }
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder().access_token(jwtToken).refresh_token(jwtRefreshToken).build();
@@ -147,5 +157,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } else {
             throw new AppException(ErrorCode.TOKEN_EXPIRED);
         }
+    }
+
+    @Override
+    public Boolean checkTokenExpired(String token) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        String username = jwtService.extractUsername(token);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        return jwtService.isTokenValid(token, user);
     }
 }
