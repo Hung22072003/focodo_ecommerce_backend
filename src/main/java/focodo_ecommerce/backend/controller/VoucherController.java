@@ -49,10 +49,11 @@ public class VoucherController {
         return ApiResponse.<String>builder().result("Delete voucher successfully").build();
     }
 
-    @GetMapping("/checkVoucher/{id}")
+    @GetMapping("/checkVoucher")
     public ApiResponse<Boolean> checkVoucher(
-            @PathVariable("id") String id
+            @RequestParam(name = "id") String id,
+            @RequestParam(name = "total") long total
     ) {
-        return ApiResponse.<Boolean>builder().result(voucherService.checkVoucher(id)).build();
+        return ApiResponse.<Boolean>builder().result(voucherService.checkVoucher(id, total)).build();
     }
 }

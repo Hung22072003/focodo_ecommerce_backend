@@ -17,5 +17,5 @@ public interface VoucherService {
 
     List<VoucherDTO> getAllVoucherNotPaginated();
 
-    Boolean checkVoucher(String id);
+    Boolean checkVoucher(String id, long total);
 }

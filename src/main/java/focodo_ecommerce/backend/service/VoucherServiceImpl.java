@@ -19,7 +19,7 @@ public class VoucherServiceImpl implements VoucherService{
     private final VoucherRepository voucherRepository;
     @Override
     public List<VoucherDTO> getAllVoucher() {
-        return voucherRepository.findAll().stream().filter((voucher) -> !voucher.getEnd_date().isBefore(LocalDate.now())).map(VoucherDTO::new).toList();
+        return voucherRepository.findAll().stream().filter((voucher) -> !voucher.getEnd_date().isBefore(LocalDate.now()) && !voucher.getStart_date().isAfter(LocalDate.now())).map(VoucherDTO::new).toList();
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
@@ -34,9 +34,9 @@ public class VoucherServiceImpl implements VoucherService{
     }
 
     @Override
-    public Boolean checkVoucher(String id) {
+    public Boolean checkVoucher(String id, long total) {
         Voucher voucher = voucherRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.VOUCHER_NOT_FOUND));
-        return !voucher.getEnd_date().isBefore(LocalDate.now()) && voucher.getQuantity() != 0;
+        return !voucher.getEnd_date().isBefore(LocalDate.now()) && voucher.getQuantity() != 0 && total >= voucher.getMin_total();
     }
 
     @Override
