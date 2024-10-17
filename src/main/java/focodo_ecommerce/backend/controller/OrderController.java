@@ -4,10 +4,7 @@ import focodo_ecommerce.backend.dto.OrderDTO;
 import focodo_ecommerce.backend.dto.OrderStatusDTO;
 import focodo_ecommerce.backend.dto.PaymentDTO;
 import focodo_ecommerce.backend.dto.PaymentMethodDTO;
-import focodo_ecommerce.backend.model.ApiResponse;
-import focodo_ecommerce.backend.model.CustomerRequest;
-import focodo_ecommerce.backend.model.OrderRequest;
-import focodo_ecommerce.backend.model.PaginationObjectResponse;
+import focodo_ecommerce.backend.model.*;
 import focodo_ecommerce.backend.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +21,9 @@ public class OrderController {
     @PostMapping("/create")
     public ApiResponse<PaymentDTO> createOrder(
             HttpServletRequest request,
-            @RequestPart(name = "customer")CustomerRequest customerRequest,
-            @RequestPart(name = "order")OrderRequest orderRequest
+            @RequestBody OrderRequestBody order
             ) {
-        return ApiResponse.<PaymentDTO>builder().result(orderService.createOrder(request, customerRequest, orderRequest)).build();
+        return ApiResponse.<PaymentDTO>builder().result(orderService.createOrder(request, order.getCustomer(), order.getOrder())).build();
     }
 
     @GetMapping("/getOrderById/{id}")
