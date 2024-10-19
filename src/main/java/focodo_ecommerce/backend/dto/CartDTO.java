@@ -24,7 +24,7 @@ public class CartDTO {
         this.quantity = cart.getQuantity();
         this.unit_price = cart.getProduct().getSell_price();
         this.original_price = cart.getProduct().getOriginal_price();
-        this.image = cart.getProduct().getProductImageList().get(0).getImage();
+        this.image = !cart.getProduct().getProductImageList().isEmpty() ? cart.getProduct().getProductImageList().get(0).getImage() : null;
         this.check = cart.getCheck();
     }
 }

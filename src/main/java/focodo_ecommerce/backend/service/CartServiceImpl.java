@@ -97,4 +97,14 @@ public class CartServiceImpl implements CartService{
         product.setQuantity(product.getQuantity() + product.getPackage_quantity());
         return new CartDTO(foundCart);
     }
+
+    @Override
+    public CartDTO updateQuantityCart(int id, int quantity) {
+        Cart foundCart = cartRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+        Product product = foundCart.getProduct();
+        if(product.getQuantity() < product.getPackage_quantity() * quantity) throw new RuntimeException("Product is not enough quantity");
+        product.setQuantity(product.getQuantity() + product.getPackage_quantity()*(foundCart.getQuantity() - quantity));
+        foundCart.setQuantity(quantity);
+        return new CartDTO(foundCart);
+    }
 }

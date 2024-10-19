@@ -33,6 +33,14 @@ public class CartController {
         return ApiResponse.<CartDTO>builder().result(cartService.updateCart(id)).build();
     }
 
+
+    @PutMapping("/updateQuantityCart/{id}")
+    public ApiResponse<CartDTO> updateQuantityCart(
+            @PathVariable("id") int id,
+            @RequestParam("quantity") int quantity
+    ) {
+        return ApiResponse.<CartDTO>builder().result(cartService.updateQuantityCart(id, quantity)).build();
+    }
     @PutMapping("/increaseQuantityCart/{id}")
     public ApiResponse<CartDTO> increaseQuantityCart(
         @PathVariable("id") int id

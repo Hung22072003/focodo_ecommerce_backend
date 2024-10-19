@@ -17,4 +17,6 @@ public interface CartService {
     CartDTO increaseQuantityCart(int id);
 
     CartDTO decreaseQuantityCart(int id);
+
+    CartDTO updateQuantityCart(int id, int quantity);
 }
