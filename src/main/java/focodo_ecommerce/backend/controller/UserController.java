@@ -52,6 +52,19 @@ public class UserController {
         return ApiResponse.<UserDTO>builder().result(userService.updateProfileUser(userProfileRequest)).build();
     }
 
+    @PutMapping("/updateDetailProfileUser")
+    public ApiResponse<UserDTO> updateDetailProfileUser(
+            @RequestParam(name = "full_name", required = false) String full_name,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "phone", required = false) String phone,
+            @RequestParam(name = "address", required = false) String address,
+            @RequestParam(name = "province", required = false) String province,
+            @RequestParam(name = "district", required = false) String district,
+            @RequestParam(name = "ward", required = false) String ward
+    ) {
+        return ApiResponse.<UserDTO>builder().result(userService.updateProfileUser(full_name, email, phone, address, province, district, ward)).build();
+    }
+
     @PutMapping("/updateAvatar")
     public void updateAvatar(@RequestParam("avatar") MultipartFile avatar){
         userService.updateAvatar(avatar);

@@ -23,4 +23,6 @@ public interface UserService {
     List<UserDTO> getAllUsersNotPaginated();
 
     void updateAvatar(MultipartFile avatar);
+
+    UserDTO updateProfileUser(String fullName, String email, String phone, String address, String province, String district, String ward);
 }

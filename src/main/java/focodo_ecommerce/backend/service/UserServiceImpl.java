@@ -51,6 +51,21 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
+    public UserDTO updateProfileUser(String fullName, String email, String phone, String address, String province, String district, String ward) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        User foundUser = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if(fullName != null) foundUser.setFull_name(fullName);
+        if(email != null) foundUser.setEmail(email);
+        if(phone != null) foundUser.setPhone(phone);
+        if(address != null) foundUser.setAddress(address);
+        if(province != null) foundUser.setDistrict(province);
+        if(district != null) foundUser.setProvince(district);
+        if(ward != null) foundUser.setWard(ward);
+        return new UserDTO(foundUser);
+    }
+
+    @Override
     public UserDTO getUser(String name) {
         return new UserDTO(userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
