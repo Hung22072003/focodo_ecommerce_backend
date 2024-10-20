@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public PaginationObjectResponse searchProducts(String query, int page, int size) {
-        if(query.isEmpty()) return null ;
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
         Page<Product> products = productRepository.findByNameContaining(query, PageRequest.of(page, size, Sort.by("id").descending()));
         return PaginationObjectResponse.builder().data(products.get().map(ProductDTO::new).toList()).pagination(new Pagination(products.getTotalElements(), products.getTotalPages(), products.getNumber())).build();
     }

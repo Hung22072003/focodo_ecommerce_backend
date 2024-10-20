@@ -41,10 +41,8 @@ public class OrderServiceImpl implements OrderService{
     private final NotificationService notificationService;
     @Override
     @Transactional
-    public PaymentDTO createOrder(HttpServletRequest request, CustomerRequest customerRequest, OrderRequest orderRequest) {
-
+    public PaymentDTO createOrder(HttpServletRequest request, CustomerRequest customerRequest, OrderRequest orderRequest, String platform) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if(orderRequest.getId_voucher() != null) {
             voucherRepository.findById(orderRequest.getId_voucher()).ifPresent(voucher -> voucher.setQuantity(voucher.getQuantity() - 1));
         }
@@ -104,7 +102,7 @@ public class OrderServiceImpl implements OrderService{
 
         notificationService.createNotification(id_order);
         if(paymentMethod.getMethod().equals("VNPAY")) {
-            return paymentService.createVnPayPayment(request, newOrder.getFinal_price(), newOrder.getId_order());
+            return paymentService.createVnPayPayment(request, newOrder.getFinal_price(), newOrder.getId_order(), platform);
         }
 
         return new PaymentDTO("ok", "success", id_order, "");
@@ -199,7 +197,7 @@ public class OrderServiceImpl implements OrderService{
     @Transactional
     public void updateReviewOfOrder(String id) {
         Order foundOrder = orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        if(foundOrder.getOrderStatus().getStatus().equals("Đã giao")) foundOrder.set_check(true);
+        if(foundOrder.getOrderStatus().getStatus().equals("Đã giao") && !foundOrder.is_check()) foundOrder.set_check(true);
     }
 
     @Override

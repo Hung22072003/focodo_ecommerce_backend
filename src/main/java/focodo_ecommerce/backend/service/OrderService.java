@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface OrderService {
-    PaymentDTO createOrder(HttpServletRequest request, CustomerRequest customerRequest, OrderRequest orderRequest);
+    PaymentDTO createOrder(HttpServletRequest request, CustomerRequest customerRequest, OrderRequest orderRequest, String platform);
 
     void setPaymentStatus(String id_order, int status);
 

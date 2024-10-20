@@ -21,9 +21,10 @@ public class OrderController {
     @PostMapping("/create")
     public ApiResponse<PaymentDTO> createOrder(
             HttpServletRequest request,
-            @RequestBody OrderRequestBody order
+            @RequestBody OrderRequestBody order,
+            @RequestParam(name = "platform", required = false) String platform
             ) {
-        return ApiResponse.<PaymentDTO>builder().result(orderService.createOrder(request, order.getCustomer(), order.getOrder())).build();
+        return ApiResponse.<PaymentDTO>builder().result(orderService.createOrder(request, order.getCustomer(), order.getOrder(), platform)).build();
     }
 
     @GetMapping("/getOrderById/{id}")
