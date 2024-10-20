@@ -99,6 +99,7 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
     public CartDTO updateQuantityCart(int id, int quantity) {
         Cart foundCart = cartRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
         Product product = foundCart.getProduct();
