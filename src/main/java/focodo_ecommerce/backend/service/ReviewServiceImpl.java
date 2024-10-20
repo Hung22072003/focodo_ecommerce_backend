@@ -36,8 +36,9 @@ public class ReviewServiceImpl implements ReviewService{
     private final ImageReviewRepository imageReviewRepository;
     private final UserRepository userRepository;
     private final CloudinaryService cloudinaryService;
+    private final OrderService orderService;
     @Override
-    public ReviewDTO createReview(ReviewRequest reviewRequest, List<MultipartFile> images) {
+    public ReviewDTO createReview(ReviewRequest reviewRequest, List<MultipartFile> images, String id_order) {
         Review review = new Review();
         review.setContent(reviewRequest.getContent());
         review.setRating(reviewRequest.getRating());
@@ -53,6 +54,8 @@ public class ReviewServiceImpl implements ReviewService{
             imageReviewRepository.saveAll(reviewSaveImages);
             reviewDTO.setImages(reviewImages);
         }
+
+        orderService.updateReviewOfOrder(id_order);
         return reviewDTO;
     }
 

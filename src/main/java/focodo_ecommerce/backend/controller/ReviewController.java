@@ -57,10 +57,11 @@ public class ReviewController {
     }
     @PostMapping("/create")
     public ApiResponse<ReviewDTO> createReview(
+            @RequestParam(name = "id_order") String id_order,
             @RequestParam(name = "images", required = false) List<MultipartFile> images,
             @RequestPart(name = "review", required = false)ReviewRequest reviewRequest
             ) {
-        return ApiResponse.<ReviewDTO>builder().result(reviewService.createReview(reviewRequest, images)).build();
+        return ApiResponse.<ReviewDTO>builder().result(reviewService.createReview(reviewRequest, images, id_order)).build();
     }
 
     @PutMapping("/update/{id}")

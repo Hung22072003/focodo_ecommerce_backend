@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ReviewService {
-    ReviewDTO createReview(ReviewRequest reviewRequest, List<MultipartFile> images);
+    ReviewDTO createReview(ReviewRequest reviewRequest, List<MultipartFile> images, String id_order);
 
     PaginationObjectResponse getAllReviews(int page, int size);
 
