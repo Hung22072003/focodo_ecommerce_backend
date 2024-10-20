@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
@@ -87,6 +89,12 @@ public class CategoryServiceImpl implements CategoryService{
             foundCategory.setImage(categoryImage);
         }
         return new CategoryDTO(foundCategory);
+    }
+
+     @Override
+    public List<CategoryDTO> getCategoriesByOptions(List<String> options) {
+        List<CategoryDTO> categoryDTOS = getAllCategoriesNotPaginated();
+        return categoryDTOS.stream().filter((categoryDTO) -> options.contains((categoryDTO.getName()))).collect(Collectors.toList());
     }
 
     @Override

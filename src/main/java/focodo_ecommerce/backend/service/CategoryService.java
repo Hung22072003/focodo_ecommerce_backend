@@ -27,4 +27,6 @@ public interface CategoryService {
     void deleteCategory(int id);
 
     CategoryDTO updateCategory(int id, CategoryRequest category, MultipartFile image);
+
+    List<CategoryDTO> getCategoriesByOptions(List<String> options);
 }

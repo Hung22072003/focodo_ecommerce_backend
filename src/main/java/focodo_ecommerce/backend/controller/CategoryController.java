@@ -36,6 +36,13 @@ public class CategoryController {
     ) {
         return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getAllCategoriesNotPaginated()).build();
     }
+
+    @PostMapping("/getCategoriesByOptions")
+    public ApiResponse<List<CategoryDTO>> getCategoriesByOptions(
+            @RequestParam(name = "options") List<String> options
+    ) {
+        return ApiResponse.<List<CategoryDTO>>builder().result(categoryService.getCategoriesByOptions(options)).build();
+    }
     @GetMapping("/getCategoryById/{id}")
     public ApiResponse<CategoryDTO> getCategoryById(
             @PathVariable("id") int id
