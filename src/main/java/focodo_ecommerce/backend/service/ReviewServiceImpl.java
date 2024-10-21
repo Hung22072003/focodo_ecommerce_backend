@@ -36,7 +36,7 @@ public class ReviewServiceImpl implements ReviewService{
     private final CloudinaryService cloudinaryService;
     private final OrderRepository orderRepository;
     @Override
-    @Transactional
+    // @Transactional
     public ReviewDTO createReview(ReviewRequest reviewRequest, List<MultipartFile> images, String id_order) {
         Order order = orderRepository.findById(id_order).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         Review review = new Review();
@@ -56,6 +56,7 @@ public class ReviewServiceImpl implements ReviewService{
             reviewDTO.setImages(reviewImages);
         }
         order.set_check(true);
+        orderRepository.save(order);
         return reviewDTO;
     }
 
