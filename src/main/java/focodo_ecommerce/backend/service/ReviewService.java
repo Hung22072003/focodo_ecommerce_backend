@@ -23,4 +23,6 @@ public interface ReviewService {
     List<ReviewDTO> getReviewsOfProduct(int id);
 
     PaginationObjectResponse getReviewsOfUser(int page, int size);
+
+    List<ReviewDTO> getReviewsOfOrder(String idOrder);
 }

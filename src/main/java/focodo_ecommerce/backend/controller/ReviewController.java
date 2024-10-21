@@ -55,6 +55,13 @@ public class ReviewController {
     ) {
         return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getReviewsOfUser(page, size)).build();
     }
+
+    @GetMapping("/getReviewsOfOrder/{id_order}")
+    public ApiResponse<List<ReviewDTO>> getReviewsOfOrder(
+            @PathVariable("id_order") String id_order
+    ) {
+        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getReviewsOfOrder(id_order)).build();
+    }
     @PostMapping("/create")
     public ApiResponse<ReviewDTO> createReview(
             @RequestParam(name = "id_order") String id_order,

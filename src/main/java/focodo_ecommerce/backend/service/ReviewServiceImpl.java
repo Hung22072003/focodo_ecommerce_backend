@@ -2,6 +2,7 @@ package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.ReviewDTO;
 import focodo_ecommerce.backend.entity.ImageReview;
+import focodo_ecommerce.backend.entity.Order;
 import focodo_ecommerce.backend.entity.Review;
 import focodo_ecommerce.backend.entity.User;
 import focodo_ecommerce.backend.exception.AppException;
@@ -9,10 +10,7 @@ import focodo_ecommerce.backend.exception.ErrorCode;
 import focodo_ecommerce.backend.model.Pagination;
 import focodo_ecommerce.backend.model.PaginationObjectResponse;
 import focodo_ecommerce.backend.model.ReviewRequest;
-import focodo_ecommerce.backend.repository.ImageReviewRepository;
-import focodo_ecommerce.backend.repository.ProductRepository;
-import focodo_ecommerce.backend.repository.ReviewRepository;
-import focodo_ecommerce.backend.repository.UserRepository;
+import focodo_ecommerce.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,13 +34,16 @@ public class ReviewServiceImpl implements ReviewService{
     private final ImageReviewRepository imageReviewRepository;
     private final UserRepository userRepository;
     private final CloudinaryService cloudinaryService;
-    private final OrderService orderService;
+    private final OrderRepository orderRepository;
     @Override
+    @Transactional
     public ReviewDTO createReview(ReviewRequest reviewRequest, List<MultipartFile> images, String id_order) {
+        Order order = orderRepository.findById(id_order).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         Review review = new Review();
         review.setContent(reviewRequest.getContent());
         review.setRating(reviewRequest.getRating());
         review.setDate(LocalDateTime.now());
+        review.setOrder(order);
         review.setProduct(productRepository.findById(reviewRequest.getId_product()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)));
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         review.setUser(userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
@@ -54,8 +55,7 @@ public class ReviewServiceImpl implements ReviewService{
             imageReviewRepository.saveAll(reviewSaveImages);
             reviewDTO.setImages(reviewImages);
         }
-
-        orderService.updateReviewOfOrder(id_order);
+        order.set_check(true);
         return reviewDTO;
     }
 
@@ -147,5 +147,11 @@ public class ReviewServiceImpl implements ReviewService{
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         Page<Review> reviews = reviewRepository.findReviewsByUser(user, PageRequest.of(page, size, Sort.by("date").descending()));
         return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(), reviews.getTotalPages(), reviews.getNumber())).build();
+    }
+
+    @Override
+    public List<ReviewDTO> getReviewsOfOrder(String idOrder) {
+        Order order = orderRepository.findById(idOrder).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        return order.getReviews().stream().map(ReviewDTO::new).toList();
     }
 }
