@@ -31,6 +31,10 @@ public class Review {
     @JoinColumn(name = "id_user")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "id_order")
+    private Order order;
+
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     List<ImageReview> imageReviews;
 }

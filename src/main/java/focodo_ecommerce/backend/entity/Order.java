@@ -46,6 +46,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Notification notification;
 
