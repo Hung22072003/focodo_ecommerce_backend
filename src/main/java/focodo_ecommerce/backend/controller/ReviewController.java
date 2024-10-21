@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.security.Principal;
 import java.util.List;
 
@@ -18,6 +20,8 @@ import java.util.List;
 @CrossOrigin
 public class ReviewController {
     private final ReviewService reviewService;
+    private final ObjectMapper objectMapper; // Sử dụng ObjectMapper từ Spring context
+
     @GetMapping("")
     public ApiResponse<PaginationObjectResponse> getAllReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -55,13 +59,22 @@ public class ReviewController {
     ) {
         return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getReviewsOfUser(page, size)).build();
     }
+
     @PostMapping("/create")
     public ApiResponse<ReviewDTO> createReview(
             @RequestParam(name = "id_order") String id_order,
             @RequestParam(name = "images", required = false) List<MultipartFile> images,
-            @RequestPart(name = "review", required = false)ReviewRequest reviewRequest
-            ) {
-        return ApiResponse.<ReviewDTO>builder().result(reviewService.createReview(reviewRequest, images, id_order)).build();
+            @RequestParam(name = "review") String reviewJson) {
+        try {
+            System.out.println("reviewJson: " + reviewJson);
+            ReviewRequest reviewRequest = objectMapper.readValue(reviewJson, ReviewRequest.class);
+            System.out.println("id_order: " + id_order);
+            System.out.println("images: " + images);
+            System.out.println("reviewRequest: " + reviewRequest);
+            return ApiResponse.<ReviewDTO>builder().result(reviewService.createReview(reviewRequest, images, id_order)).build();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse review JSON", e);
+        }
     }
 
     @PutMapping("/update/{id}")
