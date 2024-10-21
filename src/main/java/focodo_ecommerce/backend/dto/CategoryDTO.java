@@ -19,6 +19,7 @@ public class CategoryDTO {
     private String image;
     private String description;
     private int number_of_products;
+    private CategoryDTO parent_category;
     private List<CategoryDTO> subcategories;
 
     public CategoryDTO(Category category) {
@@ -26,6 +27,7 @@ public class CategoryDTO {
         this.name = category.getName();
         this.image = category.getImage();
         this.description = category.getDescription();
+        this.parent_category = category.getParent_category() != null ? new CategoryDTO(category.getParent_category()) : null;
         this.number_of_products = (category.getProducts()!=null) ? category.getProducts().size() : 0;
         this.subcategories = (category.getSubcategories() != null) ? category.getSubcategories().stream().map(CategoryDTO::new).collect(Collectors.toList()) : List.of();
     }
