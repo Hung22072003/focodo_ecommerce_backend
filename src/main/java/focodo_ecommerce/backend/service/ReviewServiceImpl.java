@@ -155,4 +155,10 @@ public class ReviewServiceImpl implements ReviewService{
         Order order = orderRepository.findById(idOrder).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         return order.getReviews().stream().map(ReviewDTO::new).toList();
     }
+
+    @Override
+    public ReviewDTO getReviewById(int id) {
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+        return new ReviewDTO(review);
+    }
 }
