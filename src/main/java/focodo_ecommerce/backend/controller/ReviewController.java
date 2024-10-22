@@ -92,9 +92,15 @@ public class ReviewController {
             @PathVariable("id") int id,
             @RequestParam(name = "files", required = false) List<MultipartFile> files,
             @RequestParam(name = "images", required = false) List<String> images,
-            @RequestPart(name = "review", required = false)ReviewRequest reviewRequest
+            @RequestPart(name = "review", required = false) String reviewJson
     ) {
-        return ApiResponse.<ReviewDTO>builder().result(reviewService.updateReview(id, files, images, reviewRequest)).build();
+        try {
+            ReviewRequest reviewRequest = objectMapper.readValue(reviewJson, ReviewRequest.class);
+            return ApiResponse.<ReviewDTO>builder().result(reviewService.updateReview(id, files, images, reviewRequest)).build();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Failed to parse review JSON", e);
+        }
     }
 
     @DeleteMapping("delete/{id}")
