@@ -22,4 +22,6 @@ public interface AuthenticationService {
     Boolean checkAdminRoleToken(String token);
 
     Boolean checkTokenExpired(String token);
+
+    String resetPassword(String email, String password);
 }

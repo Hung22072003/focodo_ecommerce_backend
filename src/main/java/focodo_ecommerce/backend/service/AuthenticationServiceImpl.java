@@ -167,4 +167,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserDetails user = userDetailsService.loadUserByUsername(username);
         return jwtService.isTokenValid(token, user);
     }
+
+    @Override
+    public String resetPassword(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+        return "Reset password successfully!";
+    }
 }

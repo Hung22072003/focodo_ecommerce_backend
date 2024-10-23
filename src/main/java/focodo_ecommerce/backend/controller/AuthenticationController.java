@@ -63,4 +63,12 @@ public class AuthenticationController {
     ){
         return ApiResponse.<String>builder().result(authenticationService.verifyOtp(email, otp)).build();
     }
+
+    @PostMapping("/resetPassword")
+    public ApiResponse<String> resetPassword(
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "password") String password
+    ){
+        return ApiResponse.<String>builder().result(authenticationService.resetPassword(email, password)).build();
+    }
 }
