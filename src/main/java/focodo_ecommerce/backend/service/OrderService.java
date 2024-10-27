@@ -33,4 +33,6 @@ public interface OrderService {
     List<OrderStatusDTO> getAllOrderStatus();
 
     List<PaymentMethodDTO> getAllPaymentMethod();
+
+    OrderDTO updatePaymentStatus(String id, String status);
 }

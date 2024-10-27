@@ -87,12 +87,14 @@ public class OrderServiceImpl implements OrderService{
         }
         newOrder.setPaymentMethod(paymentMethod);
         newOrder.setOrderStatus(orderStatusRepository.findByStatus("Chưa xác nhận").orElseThrow(() -> new AppException(ErrorCode.ORDER_STATUS_NOT_FOUND)));
-        newOrder.setPaymentStatus(paymentStatusRepository.findByStatus("Chưa thanh toán"));
+        newOrder.setPaymentStatus(paymentStatusRepository.findByStatus("Chưa thanh toán").orElseThrow(() -> new AppException(ErrorCode.PAYMENT_STATUS_NOT_FOUND)));
         orderRepository.save(newOrder);
         List<OrderDetail> orderDetails = orderRequest.getDetails().stream().map((orderDetailRequest -> {
+            Product product = productRepository.findById(orderDetailRequest.getId_product()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+            if(product.getQuantity() < orderDetailRequest.getQuantity()) throw new RuntimeException("Product is not enough quantity");
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(newOrder);
-            orderDetail.setProduct(productRepository.findById(orderDetailRequest.getId_product()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)));
+            orderDetail.setProduct(product);
             orderDetail.setQuantity(orderDetailRequest.getQuantity());
             orderDetail.setUnit_price(orderDetailRequest.getUnit_price());
             orderDetail.setTotal_price(orderDetailRequest.getUnit_price() * orderDetailRequest.getQuantity());
@@ -154,7 +156,7 @@ public class OrderServiceImpl implements OrderService{
             order.setOrderStatus(orderStatus);
             check = true;
         } else if(order.getUser() != null){
-            if(user.getId() == order.getUser().getId() && order.getOrderStatus().getStatus().equals("Chưa xác nhận") && orderStatus.getStatus().equals("Đã hủy")) {
+            if(user.getId() == order.getUser().getId()  ) {
                 check = true;
                 order.setOrderStatus(orderStatus);
             }
@@ -208,5 +210,14 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<PaymentMethodDTO> getAllPaymentMethod() {
         return paymentMethodRepository.findAll().stream().map(PaymentMethodDTO::new).toList();
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO updatePaymentStatus(String id, String status) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        PaymentStatus paymentStatus = paymentStatusRepository.findByStatus(status).orElseThrow(() -> new AppException(ErrorCode.PAYMENT_STATUS_NOT_FOUND));
+        order.setPaymentStatus(paymentStatus);
+        return new OrderDTO(order);
     }
 }

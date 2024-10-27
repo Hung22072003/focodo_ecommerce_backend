@@ -49,6 +49,14 @@ public class OrderController {
         return ApiResponse.<OrderDTO>builder().result(orderService.updateOrderStatus(id, status)).build();
     }
 
+    @PutMapping("/updatePaymentStatus/{id}")
+    public ApiResponse<OrderDTO> updatePaymentStatus(
+            @PathVariable("id") String id,
+            @RequestParam(name = "status") String status
+    ) {
+        return ApiResponse.<OrderDTO>builder().result(orderService.updatePaymentStatus(id, status)).build();
+    }
+
     @PutMapping("/updateReviewOfOrder/{id}")
     public void updateReview(
             @PathVariable("id") String id
