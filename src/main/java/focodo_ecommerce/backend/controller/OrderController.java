@@ -72,6 +72,15 @@ public class OrderController {
         return ApiResponse.<PaginationObjectResponse>builder().result(orderService.getOrdersOfUser(page, size)).build();
     }
 
+    @GetMapping("/getOrdersOfUserById/{id_user}")
+    public ApiResponse<PaginationObjectResponse> getOrdersOfUserById(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @PathVariable("id_user") int id_user
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(orderService.getOrdersOfUserById(page, size, id_user)).build();
+    }
+
     @GetMapping("/getAllOrderStatus")
     public ApiResponse<List<OrderStatusDTO>> getAllOrderStatus(
     ) {

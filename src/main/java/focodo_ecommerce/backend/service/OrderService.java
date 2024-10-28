@@ -35,4 +35,6 @@ public interface OrderService {
     List<PaymentMethodDTO> getAllPaymentMethod();
 
     OrderDTO updatePaymentStatus(String id, String status);
+
+    PaginationObjectResponse getOrdersOfUserById(int page, int size, int idUser);
 }

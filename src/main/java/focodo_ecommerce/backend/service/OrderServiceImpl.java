@@ -220,4 +220,12 @@ public class OrderServiceImpl implements OrderService{
         order.setPaymentStatus(paymentStatus);
         return new OrderDTO(order);
     }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public PaginationObjectResponse getOrdersOfUserById(int page, int size, int idUser) {
+        User foundUser = userRepository.findById(idUser).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Page<Order> orders = orderRepository.findAllByUser(foundUser, PageRequest.of(page, size, Sort.by("order_date").descending()));
+        return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
+    }
 }
