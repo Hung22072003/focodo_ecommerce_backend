@@ -1,6 +1,7 @@
 package focodo_ecommerce.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import focodo_ecommerce.backend.entity.Order;
 import focodo_ecommerce.backend.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,8 @@ public class UserDTO {
     private String role;
     private String username;
     private String avatar;
+    private int quantity_order;
+    private Long total_money;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -35,5 +38,7 @@ public class UserDTO {
         this.username = user.getUsername();
         this.role = user.getRole().toString();
         this.avatar = user.getAvatar();
+        this.quantity_order = (user.getOrders() != null) ?  user.getOrders().size() : 0;
+        this.total_money = (user.getOrders() != null) ? user.getOrders().stream().map(Order::getFinal_price).reduce(0L, Long::sum) : 0;
     }
 }
