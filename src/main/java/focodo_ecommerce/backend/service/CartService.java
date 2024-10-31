@@ -2,6 +2,7 @@ package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.CartDTO;
 import focodo_ecommerce.backend.model.CartRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface CartService {
     CartDTO decreaseQuantityCart(int id);
 
     CartDTO updateQuantityCart(int id, int quantity);
+
+    Integer getNumberOfCart();
 }

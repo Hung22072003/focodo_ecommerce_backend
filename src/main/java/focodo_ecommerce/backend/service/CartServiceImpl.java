@@ -108,4 +108,12 @@ public class CartServiceImpl implements CartService{
         foundCart.setQuantity(quantity);
         return new CartDTO(foundCart);
     }
+
+    @Override
+    public Integer getNumberOfCart() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return user.getCarts().size();
+    }
+
 }

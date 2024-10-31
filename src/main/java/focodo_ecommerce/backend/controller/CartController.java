@@ -4,6 +4,7 @@ import focodo_ecommerce.backend.dto.CartDTO;
 import focodo_ecommerce.backend.model.ApiResponse;
 import focodo_ecommerce.backend.model.CartRequest;
 import focodo_ecommerce.backend.service.CartService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,11 @@ public class CartController {
     @GetMapping("/getCartOfUser")
     public ApiResponse<List<CartDTO>> getCartOfUser() {
         return ApiResponse.<List<CartDTO>>builder().result(cartService.getCartOfUser()).build();
+    }
+
+    @GetMapping("/getNumberOfCart")
+    public ApiResponse<Integer> getNumberOfCart() {
+        return ApiResponse.<Integer>builder().result(cartService.getNumberOfCart()).build();
     }
     @PostMapping("/addCart")
     public void addCart(@RequestBody CartRequest cartRequest) {
