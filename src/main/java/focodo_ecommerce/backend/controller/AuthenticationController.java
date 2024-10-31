@@ -7,6 +7,7 @@ import focodo_ecommerce.backend.auth.RegisterRequest;
 import focodo_ecommerce.backend.model.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -67,7 +68,7 @@ public class AuthenticationController {
     @PostMapping("/resetPassword")
     public ApiResponse<String> resetPassword(
             @RequestParam(value = "email") String email,
-            @RequestParam(value = "password") String password
+            @RequestParam(value = "password") @Length(min = 6, message = "INVALID_PASSWORD") String password
     ){
         return ApiResponse.<String>builder().result(authenticationService.resetPassword(email, password)).build();
     }

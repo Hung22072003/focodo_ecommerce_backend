@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
 
@@ -47,6 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setEmail(request.getEmail());
             user.setFull_name(request.getFull_name());
             user.setRole(Role.USER);
+            user.setCreated_date(LocalDateTime.now());
             userRepository.save(user);
         } else {
             user = User.builder()
@@ -56,6 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .username(request.getUsername())
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.USER)
+                    .created_date(LocalDateTime.now())
                     .build();
             userRepository.save(user);
         }
