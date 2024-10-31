@@ -161,4 +161,11 @@ public class ReviewServiceImpl implements ReviewService{
         Review review = reviewRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
         return new ReviewDTO(review);
     }
+
+    @Override
+    public PaginationObjectResponse getReviewsByIdUser(int id, int page, int size) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Page<Review> reviews = reviewRepository.findReviewsByUser(user, PageRequest.of(page, size, Sort.by("date").descending()));
+        return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(), reviews.getTotalPages(), reviews.getNumber())).build();
+    }
 }

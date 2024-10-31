@@ -60,6 +60,15 @@ public class ReviewController {
         return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getReviewsOfUser(page, size)).build();
     }
 
+    @GetMapping("/getReviewsByIdUser/{id}")
+    public ApiResponse<PaginationObjectResponse> getReviewsByIdUser(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @PathVariable("id") int id
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getReviewsByIdUser(id, page, size)).build();
+    }
+
     @GetMapping("/getReviewsOfOrder/{id_order}")
     public ApiResponse<List<ReviewDTO>> getReviewsOfOrder(
             @PathVariable("id_order") String id_order
