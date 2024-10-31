@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class UserDTO {
     private String avatar;
     private int quantity_order;
     private Long total_money;
-
+    private LocalDateTime created_date;
     public UserDTO(User user) {
         this.id = user.getId();
         this.full_name = user.getFull_name();
@@ -38,7 +40,8 @@ public class UserDTO {
         this.username = user.getUsername();
         this.role = user.getRole().toString();
         this.avatar = user.getAvatar();
-        this.quantity_order = (user.getOrders() != null) ?  user.getOrders().size() : 0;
-        this.total_money = (user.getOrders() != null) ? user.getOrders().stream().map(Order::getFinal_price).reduce(0L, Long::sum) : 0;
+        this.quantity_order = user.getTotal_order();
+        this.total_money = user.getTotal_money();
+        this.created_date = user.getCreated_date();
     }
 }

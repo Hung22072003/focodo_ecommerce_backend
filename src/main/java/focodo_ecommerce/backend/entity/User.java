@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private String avatar;
+    private Long total_money = 0L;
+    private int total_order = 0;
+    private LocalDateTime created_date;
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -51,6 +55,7 @@ public class User implements UserDetails {
         this.district = customerRequest.getDistrict();
         this.ward = customerRequest.getWard();
         this.role = Role.CUSTOMER;
+        this.total_money = 0L;
     }
 
     @Override
