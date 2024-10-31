@@ -100,4 +100,11 @@ public class OrderController {
     ) {
         return ApiResponse.<PaginationObjectResponse>builder().result(orderService.getOrdersOfUserByOrderStatus(page, size, status)).build();
     }
+
+    @GetMapping("/getNumberOfOrderByStatus")
+    public ApiResponse<Integer> getNumberOfOrderByStatus(
+            @RequestParam(name = "status") String status
+    ) {
+        return ApiResponse.<Integer>builder().result(orderService.getNumberOfOrderByStatus(status)).build();
+    }
 }

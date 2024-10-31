@@ -163,6 +163,9 @@ public class OrderServiceImpl implements OrderService{
         }
         if(check) {
             if(status.equals("Đã giao")) {
+                User foundUser = userRepository.findById(order.getUser().getId()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                foundUser.setTotal_money(foundUser.getTotal_money() + order.getFinal_price());
+                foundUser.setTotal_order(foundUser.getTotal_order() + 1);
                 setPaymentStatus(order.getId_order(), 1);
                 for (OrderDetail orderDetail : order.getOrderDetails()) {
                     Product product = productRepository.findById(orderDetail.getProduct().getId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -227,5 +230,20 @@ public class OrderServiceImpl implements OrderService{
         User foundUser = userRepository.findById(idUser).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         Page<Order> orders = orderRepository.findAllByUser(foundUser, PageRequest.of(page, size, Sort.by("order_date").descending()));
         return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
+    }
+
+    @Override
+    public Integer getNumberOfOrderByStatus(String status) {
+        List<Order> orders = orderRepository.findAll();
+        return switch (status) {
+            case "Tổng hóa đơn" -> orders.size();
+            case "Đã thanh toán" ->
+                    orders.stream().filter((order) -> order.getPaymentStatus().getStatus().equals("Thành công")).toList().size();
+            case "Chưa thanh toán" ->
+                    orders.stream().filter((order) -> order.getPaymentStatus().getStatus().equals("Chưa thanh toán")).toList().size();
+            case "Đã hủy" ->
+                    orders.stream().filter((order) -> order.getOrderStatus().getStatus().equals("Đã hủy")).toList().size();
+            default -> 0;
+        };
     }
 }

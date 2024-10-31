@@ -37,4 +37,6 @@ public interface OrderService {
     OrderDTO updatePaymentStatus(String id, String status);
 
     PaginationObjectResponse getOrdersOfUserById(int page, int size, int idUser);
+
+    Integer getNumberOfOrderByStatus(String status);
 }
