@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> , JpaSpecificationExecutor<Order> {
+    @Query("select o from Order o ")
+    Page<Order> findAll(Pageable pageable);
     @Query("select o from Order o where o.user = :user")
     Page<Order> findAllByUser(User user, PageRequest orderDate);
     @Query("select o from Order o where o.user = :user and o.orderStatus.status = :status")
