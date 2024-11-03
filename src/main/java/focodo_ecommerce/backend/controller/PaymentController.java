@@ -34,12 +34,12 @@ public class PaymentController {
         System.out.println(platform);
         if (status.equals("00")) {
             orderService.setPaymentStatus(id_order, 1);
-            if(platform.equals("web")) response.sendRedirect("http://localhost:3000/payment-success");
+            if(platform.equals("web")) response.sendRedirect("http://localhost:3000/CompleteOrder?id_order=" + id_order);
             return ApiResponse.<PaymentDTO>builder().result(new PaymentDTO("00", "Success",id_order, "")).build();
         } else {
             orderService.setPaymentStatus(id_order, 2);
             orderService.setOrderStatus(id_order, 4);
-            if(platform.equals("web")) response.sendRedirect("http://localhost:3000/payment-fail");
+            if(platform.equals("web")) response.sendRedirect("http://localhost:3000/ErrorOrder");
             return ApiResponse.<PaymentDTO>builder().code(9999).message("Failed").build();
         }
     }
