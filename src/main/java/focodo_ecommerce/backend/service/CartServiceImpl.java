@@ -116,4 +116,11 @@ public class CartServiceImpl implements CartService{
         return user.getCarts().size();
     }
 
+    @Override
+    public List<CartDTO> getCartCheckedOfUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return user.getCarts().stream().filter(Cart::getCheck).map(CartDTO::new).collect(Collectors.toList());
+    }
+
 }

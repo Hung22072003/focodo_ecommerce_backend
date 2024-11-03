@@ -22,6 +22,11 @@ public class CartController {
         return ApiResponse.<List<CartDTO>>builder().result(cartService.getCartOfUser()).build();
     }
 
+    @GetMapping("/getCartCheckedOfUser")
+    public ApiResponse<List<CartDTO>> getCartCheckedOfUser() {
+        return ApiResponse.<List<CartDTO>>builder().result(cartService.getCartCheckedOfUser()).build();
+    }
+
     @GetMapping("/getNumberOfCart")
     public ApiResponse<Integer> getNumberOfCart() {
         return ApiResponse.<Integer>builder().result(cartService.getNumberOfCart()).build();

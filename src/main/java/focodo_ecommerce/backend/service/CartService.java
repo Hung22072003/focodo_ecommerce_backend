@@ -22,4 +22,6 @@ public interface CartService {
     CartDTO updateQuantityCart(int id, int quantity);
 
     Integer getNumberOfCart();
+
+    List<CartDTO> getCartCheckedOfUser();
 }
