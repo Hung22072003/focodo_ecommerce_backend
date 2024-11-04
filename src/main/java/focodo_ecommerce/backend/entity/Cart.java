@@ -19,7 +19,7 @@ public class Cart {
     private int id_cart;
     private int quantity;
     @Column(name = "`check`")
-    private Boolean check = false;
+    private Boolean check = true;
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
@@ -31,6 +31,6 @@ public class Cart {
         this.quantity = quantity;
         this.user = user;
         this.product = product;
-        this.check = false;
+        this.check = true;
     }
 }

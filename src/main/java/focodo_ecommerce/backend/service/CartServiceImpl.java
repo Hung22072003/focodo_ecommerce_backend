@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,10 @@ public class CartServiceImpl implements CartService{
         }
         if(isExistProduct) {
             user.setCarts(existCarts.stream().map((cart) -> {
-                if(cart.getProduct().equals(product)) cart.setQuantity(cart.getQuantity() + cartRequest.getQuantity());
+                if(cart.getProduct().equals(product)) {
+                    cart.setQuantity(cart.getQuantity() + cartRequest.getQuantity());
+                    cart.setCheck(true);
+                }
                 return cart;
             }).toList());
         }
@@ -57,7 +61,7 @@ public class CartServiceImpl implements CartService{
     public List<CartDTO> getCartOfUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return user.getCarts().stream().map(CartDTO::new).collect(Collectors.toList());
+        return user.getCarts().stream().sorted(Comparator.comparing(Cart::getId_cart).reversed()).map(CartDTO::new).collect(Collectors.toList());
     }
 
     @Override
@@ -120,7 +124,7 @@ public class CartServiceImpl implements CartService{
     public List<CartDTO> getCartCheckedOfUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return user.getCarts().stream().filter(Cart::getCheck).map(CartDTO::new).collect(Collectors.toList());
+        return user.getCarts().stream().filter(Cart::getCheck).sorted(Comparator.comparing(Cart::getId_cart).reversed()).map(CartDTO::new).collect(Collectors.toList());
     }
 
 }
