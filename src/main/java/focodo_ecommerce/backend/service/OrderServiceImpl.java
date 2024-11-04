@@ -172,6 +172,7 @@ public class OrderServiceImpl implements OrderService{
                     product.setSold_quantity(product.getSold_quantity() + product.getPackage_quantity() * orderDetail.getQuantity());
                 }
             } else if(status.equals("Đã hủy")) {
+                setPaymentStatus(order.getId_order(), 2);
                 notificationService.createNotification(id);
                 for (OrderDetail orderDetail : order.getOrderDetails()) {
                     Product product = productRepository.findById(orderDetail.getProduct().getId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));

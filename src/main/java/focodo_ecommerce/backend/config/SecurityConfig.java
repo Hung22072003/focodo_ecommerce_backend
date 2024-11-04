@@ -31,6 +31,7 @@ public class SecurityConfig {
             "/api/v1/payment/**",
             "/api/v1/orders/**",
             "/api/v1/notifications/**",
+            "/api/v1/statistics/**"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

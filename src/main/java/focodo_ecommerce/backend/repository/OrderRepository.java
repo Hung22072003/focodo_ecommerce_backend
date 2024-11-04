@@ -27,6 +27,6 @@ public interface OrderRepository extends JpaRepository<Order, String> , JpaSpeci
     BigDecimal sumFinalPriceByDate(@Param("formatDate") String formatDate, @Param("date") String date);
 
     @Query(value = "SELECT SUM(o.final_price - o.shipping_price) FROM `order` o " +
-            "WHERE o.order_status_id = 3", nativeQuery = true)
+            "WHERE o.payment_status_id = 1", nativeQuery = true)
     BigDecimal totalRevenue();
 }
