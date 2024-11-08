@@ -33,7 +33,7 @@ public class ProductDTO {
         this.sold_quantity = product.getSold_quantity();
         this.discount = product.getDiscount();
         this.is_delete = product.is_delete();
-        this.review = (double) product.getReviews().stream().map(Review::getRating).reduce(0, Integer::sum) / product.getReviews().size();
+        this.review = !product.getReviews().isEmpty() ? (double) product.getReviews().stream().map(Review::getRating).reduce(0, Integer::sum) / product.getReviews().size() : 0.0;
         this.image = (!product.getProductImageList().isEmpty()) ? product.getProductImageList().get(0).getImage() : null;
     }
 }

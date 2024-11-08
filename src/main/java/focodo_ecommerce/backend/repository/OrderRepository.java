@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> , JpaSpecificationExecutor<Order> {
@@ -29,4 +30,15 @@ public interface OrderRepository extends JpaRepository<Order, String> , JpaSpeci
     @Query(value = "SELECT SUM(o.final_price - o.shipping_price) FROM `order` o " +
             "WHERE o.payment_status_id = 1", nativeQuery = true)
     BigDecimal totalRevenue();
+
+    @Query("SELECT COUNT(u.id) " +
+            "FROM User u " +
+            "WHERE u.id IN (" +
+            "    SELECT u.id " +
+            "    FROM Order o JOIN User u ON o.user.id = u.id " +
+            "    WHERE o.orderStatus.id = 3 " +
+            "    GROUP BY u.id " +
+            "    HAVING COUNT(o.id) > 1" +
+            ")")
+    Long countUsersWithMultipleOrders();
 }

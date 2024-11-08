@@ -1,9 +1,6 @@
 package focodo_ecommerce.backend.controller;
 
-import focodo_ecommerce.backend.dto.ProductDTO;
-import focodo_ecommerce.backend.dto.RevenuePerDayDTO;
-import focodo_ecommerce.backend.dto.RevenuePerMonthDTO;
-import focodo_ecommerce.backend.dto.UserDTO;
+import focodo_ecommerce.backend.dto.*;
 import focodo_ecommerce.backend.model.ApiResponse;
 import focodo_ecommerce.backend.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +44,21 @@ public class StatisticsController {
         return ApiResponse.<List<UserDTO>>builder().result(statisticsService.topCustomerBySpending()).build();
     }
 
+    @GetMapping("/customer/rateCustomerReturning")
+    public ApiResponse<Long> rateCustomerReturning() {
+        return ApiResponse.<Long>builder().result(statisticsService.rateCustomerReturning()).build();
+    }
+
+    @GetMapping("/customer/rateCustomerByProvince")
+    public ApiResponse<List<ChartDTO>> rateCustomerByProvince() {
+        return ApiResponse.<List<ChartDTO>>builder().result(statisticsService.rateCustomerByProvince()).build();
+    }
+
+    @GetMapping("/order/ratePaymentMethod")
+    public ApiResponse<List<ChartDTO>> ratePaymentMethod() {
+        return ApiResponse.<List<ChartDTO>>builder().result(statisticsService.ratePaymentMethod()).build();
+    }
+
     @GetMapping("/order/total")
     public ApiResponse<Integer> totalOrder() {
         return ApiResponse.<Integer>builder().result(statisticsService.totalOrder()).build();
@@ -55,5 +67,24 @@ public class StatisticsController {
     @GetMapping("/product/topProductBestSeller")
     public ApiResponse<List<ProductDTO>> topProductBestSeller() {
         return ApiResponse.<List<ProductDTO>>builder().result(statisticsService.topProductBestSeller()).build();
+    }
+
+    @GetMapping("/product/topProductRating")
+    public ApiResponse<List<ProductDTO>> topProductRating() {
+        return ApiResponse.<List<ProductDTO>>builder().result(statisticsService.topProductRating()).build();
+    }
+
+    @GetMapping("/product/total")
+    public ApiResponse<Integer> totalProduct() {
+        return ApiResponse.<Integer>builder().result(statisticsService.totalProduct()).build();
+    }
+    @GetMapping("/product/quantityProductInActive")
+    public ApiResponse<Integer> quantityProductInActive() {
+        return ApiResponse.<Integer>builder().result(statisticsService.quantityProductInActive()).build();
+    }
+
+    @GetMapping("/product/quantityProductActive")
+    public ApiResponse<Integer> quantityProductActive() {
+        return ApiResponse.<Integer>builder().result(statisticsService.quantityProductActive()).build();
     }
 }

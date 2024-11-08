@@ -27,4 +27,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
     Page<Product> findProductsBestSeller(Pageable pageable);
     @Query(value = "select p from Product p where p.discount != 0 and p.is_delete = false")
     Page<Product> findProductsDiscount(PageRequest discount);
+    @Query(value = "select p from Product p where p.is_delete = false")
+    List<Product> findAllProductActive();
 }

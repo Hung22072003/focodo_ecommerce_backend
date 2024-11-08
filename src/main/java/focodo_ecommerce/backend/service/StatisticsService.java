@@ -1,9 +1,6 @@
 package focodo_ecommerce.backend.service;
 
-import focodo_ecommerce.backend.dto.ProductDTO;
-import focodo_ecommerce.backend.dto.RevenuePerDayDTO;
-import focodo_ecommerce.backend.dto.RevenuePerMonthDTO;
-import focodo_ecommerce.backend.dto.UserDTO;
+import focodo_ecommerce.backend.dto.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,4 +21,18 @@ public interface StatisticsService {
     List<RevenuePerDayDTO> getRevenueLastSevenDays();
 
     BigDecimal getRevenueToday();
+
+    Long rateCustomerReturning();
+
+    List<ChartDTO> rateCustomerByProvince();
+
+    List<ChartDTO> ratePaymentMethod();
+
+    List<ProductDTO> topProductRating();
+
+    Integer quantityProductInActive();
+
+    Integer quantityProductActive();
+
+    Integer totalProduct();
 }
