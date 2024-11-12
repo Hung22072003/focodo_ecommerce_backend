@@ -1,10 +1,7 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.ReviewDTO;
-import focodo_ecommerce.backend.entity.ImageReview;
-import focodo_ecommerce.backend.entity.Order;
-import focodo_ecommerce.backend.entity.Review;
-import focodo_ecommerce.backend.entity.User;
+import focodo_ecommerce.backend.entity.*;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
 import focodo_ecommerce.backend.model.Pagination;
@@ -20,6 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -101,12 +103,8 @@ public class ReviewServiceImpl implements ReviewService{
             foundReview.setContent(reviewRequest.getContent());
             foundReview.setRating(reviewRequest.getRating());
             List<ImageReview> newImages = new ArrayList<ImageReview>();
-            if(files != null ) {
-                newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ImageReview(image, foundReview)).toList());
-            }
 
             List<ImageReview> imageReviews =foundReview.getImageReviews();
-            System.out.println(images);
             if(images != null) {
                 List<String> deleteImages = new ArrayList<>();
                 List<ImageReview> deleteDbImages = new ArrayList<>();
@@ -125,6 +123,18 @@ public class ReviewServiceImpl implements ReviewService{
                 foundReview.setImageReviews(null);
             }
 
+            if(files != null ) {
+                if(newImages.isEmpty()) {
+                    newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ImageReview(image, foundReview)).toList());
+                } else {
+                    List<MultipartFile> existFiles = new ArrayList<>();
+                    for (MultipartFile file : files) {
+                        if(checkExistFile(file, newImages)) existFiles.add(file);
+                    }
+                    files.removeAll(existFiles);
+                    newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ImageReview(image, foundReview)).toList());
+                }
+            }
             foundReview.setImageReviews(newImages);
             return new ReviewDTO(foundReview);
         } else {
@@ -132,6 +142,39 @@ public class ReviewServiceImpl implements ReviewService{
         }
     }
 
+    private String calculateFileHash(InputStream fileStream) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5"); // Có thể thay bằng "SHA-1" hoặc "SHA-256" nếu cần
+
+        byte[] dataBytes = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fileStream.read(dataBytes)) != -1) {
+            md.update(dataBytes, 0, bytesRead);
+        }
+        byte[] mdBytes = md.digest();
+
+        // Convert byte array thành chuỗi hex
+        StringBuilder sb = new StringBuilder();
+        for (byte b : mdBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+    private Boolean checkExistFile(MultipartFile file, List<ImageReview> images) {
+        for (ImageReview image : images) {
+            try {
+                String newFileHash = calculateFileHash(file.getInputStream());
+                InputStream existingImageStream = new URL(image.getImage()).openStream();
+                String existingFileHash = calculateFileHash(existingImageStream);
+
+                if (newFileHash.equals(existingFileHash)) return true;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
+    }
     @Override
     public List<ReviewDTO> getAllReviewsNotPaginated() {
         return reviewRepository.findAll(Sort.by("id").descending()).stream().map(ReviewDTO::new).toList();

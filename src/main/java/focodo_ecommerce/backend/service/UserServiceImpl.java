@@ -20,6 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Service
@@ -42,12 +47,46 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll().stream().map(UserDTO::new).toList();
     }
 
+    private String calculateFileHash(InputStream fileStream) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5"); // Có thể thay bằng "SHA-1" hoặc "SHA-256" nếu cần
+
+        byte[] dataBytes = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fileStream.read(dataBytes)) != -1) {
+            md.update(dataBytes, 0, bytesRead);
+        }
+        byte[] mdBytes = md.digest();
+
+        // Convert byte array thành chuỗi hex
+        StringBuilder sb = new StringBuilder();
+        for (byte b : mdBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
     @Override
     @Transactional
     public void updateAvatar(MultipartFile avatar) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         User foundUser = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        foundUser.setAvatar(cloudinaryService.uploadOneFile(avatar, folderName));
+        if(foundUser.getAvatar() != null)
+        {
+            try {
+                String newFileHash = calculateFileHash(avatar.getInputStream());
+                InputStream existingImageStream = new URL(foundUser.getAvatar()).openStream();
+                String existingFileHash = calculateFileHash(existingImageStream);
+
+                if (!newFileHash.equals(existingFileHash)) {
+                    foundUser.setAvatar(cloudinaryService.uploadOneFile(avatar, folderName));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            foundUser.setAvatar(cloudinaryService.uploadOneFile(avatar, folderName));
+        }
     }
 
     @Override

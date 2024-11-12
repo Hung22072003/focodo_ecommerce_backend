@@ -24,6 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +131,24 @@ public class ProductServiceImpl implements ProductService{
         }
         return productDTO;
     }
+
+    private String calculateFileHash(InputStream fileStream) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5"); // Có thể thay bằng "SHA-1" hoặc "SHA-256" nếu cần
+
+        byte[] dataBytes = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fileStream.read(dataBytes)) != -1) {
+            md.update(dataBytes, 0, bytesRead);
+        }
+        byte[] mdBytes = md.digest();
+
+        // Convert byte array thành chuỗi hex
+        StringBuilder sb = new StringBuilder();
+        for (byte b : mdBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public ProductDetailDTO updateProduct(int id, ProductRequest productRequest, List<MultipartFile> files, List<String> images) {
@@ -139,9 +162,6 @@ public class ProductServiceImpl implements ProductService{
         foundProduct.setSub_description(productRequest.getSub_description());
         foundProduct.setMain_description(productRequest.getMain_description());
         List<ProductImage> newImages = new ArrayList<ProductImage>();
-        if(files != null ) {
-            newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ProductImage(image, foundProduct)).toList());
-        }
 
         List<ProductImage> productImages =foundProduct.getProductImageList();
         if(images != null) {
@@ -162,8 +182,37 @@ public class ProductServiceImpl implements ProductService{
             foundProduct.setProductImageList(null);
         }
 
+        if(files != null ) {
+            if(newImages.isEmpty()) {
+                newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ProductImage(image, foundProduct)).toList());
+            } else {
+                List<MultipartFile> existFiles = new ArrayList<>();
+                for (MultipartFile file : files) {
+                    if(checkExistFile(file, newImages)) existFiles.add(file);
+                }
+                files.removeAll(existFiles);
+                newImages.addAll(cloudinaryService.uploadMultipleFiles(files, folderName).stream().map((image) -> new ProductImage(image, foundProduct)).toList());
+            }
+        }
+
         foundProduct.setProductImageList(newImages);
         productRepository.save(foundProduct);
         return new ProductDetailDTO(foundProduct);
+    }
+    private Boolean checkExistFile(MultipartFile file, List<ProductImage> images) {
+        for (ProductImage image : images) {
+            try {
+                String newFileHash = calculateFileHash(file.getInputStream());
+                InputStream existingImageStream = new URL(image.getImage()).openStream();
+                String existingFileHash = calculateFileHash(existingImageStream);
+
+                if (newFileHash.equals(existingFileHash)) return true;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
     }
 }

@@ -20,6 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,6 +82,23 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.deleteById(id);
     }
 
+    private String calculateFileHash(InputStream fileStream) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5"); // Có thể thay bằng "SHA-1" hoặc "SHA-256" nếu cần
+
+        byte[] dataBytes = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fileStream.read(dataBytes)) != -1) {
+            md.update(dataBytes, 0, bytesRead);
+        }
+        byte[] mdBytes = md.digest();
+
+        // Convert byte array thành chuỗi hex
+        StringBuilder sb = new StringBuilder();
+        for (byte b : mdBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
     @Override
     @Transactional
     public CategoryDTO updateCategory(int id, CategoryRequest category, MultipartFile image) {
@@ -85,8 +107,23 @@ public class CategoryServiceImpl implements CategoryService{
         foundCategory.setDescription(category.getDescription());
         foundCategory.setParent_category(categoryRepository.findById(category.getParent_category()).orElse(null));
         if(image != null) {
-            String categoryImage = cloudinaryService.uploadOneFile(image, folderName);
-            foundCategory.setImage(categoryImage);
+            if(foundCategory.getImage() != null) {
+                try {
+                    String newFileHash = calculateFileHash(image.getInputStream());
+                    InputStream existingImageStream = new URL(foundCategory.getImage()).openStream();
+                    String existingFileHash = calculateFileHash(existingImageStream);
+
+                    if (!newFileHash.equals(existingFileHash))
+                        foundCategory.setImage(cloudinaryService.uploadOneFile(image, folderName));
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                foundCategory.setImage(cloudinaryService.uploadOneFile(image, folderName));
+            }
         }
         return new CategoryDTO(foundCategory);
     }
