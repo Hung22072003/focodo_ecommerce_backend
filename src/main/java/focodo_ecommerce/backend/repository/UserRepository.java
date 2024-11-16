@@ -18,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByPhone(String phone);
     @Query("select u from User u where u.role = 'USER' or u.role = 'CUSTOMER'")
     List<User> findAllCustomer();
+
+    @Query("select u from User u where u.role = 'USER' or u.role = 'CUSTOMER'")
+    Page<User> findAllCustomer(Pageable pageable);
     @Query("select u from User u where (u.role = 'USER' or u.role = 'CUSTOMER') and u.total_money > 0")
     Page<User> topCustomerBySpending(Pageable pageable);
 }

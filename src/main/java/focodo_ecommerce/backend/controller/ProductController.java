@@ -110,4 +110,12 @@ public class ProductController {
         productService.deleteProduct(id);
         return ApiResponse.<String>builder().result("Delete product successfully").build();
     }
+
+    @PutMapping("/activeProduct/{id}")
+    public ApiResponse<String> updateStatusProduct(
+            @PathVariable("id") int id
+    ) {
+        productService.activeProduct(id);
+        return ApiResponse.<String>builder().result("Active product successfully").build();
+    }
 }

@@ -99,6 +99,15 @@ public class ProductServiceImpl implements ProductService{
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     @Transactional
+    public void activeProduct(int id) {
+        Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        foundProduct.set_delete(false);
+    }
+
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    @Transactional
     public ProductDetailDTO updateDescriptionProduct(int id, String subDescription, String mainDescription) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         if(subDescription != null) foundProduct.setSub_description(subDescription);

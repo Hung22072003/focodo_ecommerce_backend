@@ -31,4 +31,6 @@ public interface ProductService {
     List<ProductDTO> getProductsBestSeller();
 
     List<ProductDTO> getProductsDiscount();
+
+    void activeProduct(int id);
 }

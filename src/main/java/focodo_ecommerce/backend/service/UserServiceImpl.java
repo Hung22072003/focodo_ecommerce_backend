@@ -37,14 +37,14 @@ public class UserServiceImpl implements UserService{
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     public PaginationObjectResponse getAllUsers(int page, int size) {
-        Page<User> users = userRepository.findAll(PageRequest.of(page, size));
+        Page<User> users = userRepository.findAllCustomer(PageRequest.of(page, size));
         return PaginationObjectResponse.builder().data(users.get().map(UserDTO::new).toList()).pagination(new Pagination(users.getTotalElements(),users.getTotalPages(),users.getNumber())).build();
     }
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserDTO> getAllUsersNotPaginated() {
-        return userRepository.findAll().stream().map(UserDTO::new).toList();
+        return userRepository.findAllCustomer().stream().map(UserDTO::new).toList();
     }
 
     private String calculateFileHash(InputStream fileStream) throws IOException, NoSuchAlgorithmException {
