@@ -28,6 +28,7 @@ public class ProductDetailDTO {
     private ReviewResponse review;
     private List<CategoryDTO> categories;
     private List<String> images;
+    private boolean is_delete;
 
     public ProductDetailDTO(Product saveProduct) {
         this.id = saveProduct.getId();
@@ -43,5 +44,6 @@ public class ProductDetailDTO {
         this.categories = (saveProduct.getProductCategories() != null) ? saveProduct.getProductCategories().stream().map(productCategory -> new CategoryDTO(productCategory.getCategory())).toList() : null;
         this.images = (saveProduct.getProductImageList() != null) ? saveProduct.getProductImageList().stream().map(ProductImage::getImage).toList() : List.of();
         this.review = (saveProduct.getReviews() != null) ? new ReviewResponse(saveProduct.getReviews()) : null;
+        this.is_delete = saveProduct.is_delete();
     }
 }
