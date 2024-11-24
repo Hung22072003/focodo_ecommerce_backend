@@ -53,17 +53,11 @@ public class OrderServiceImpl implements OrderService{
         }
 
         PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequest.getPayment_method()).orElseThrow(() -> new AppException(ErrorCode.PAYMENT_METHOD_NOT_FOUND));
-        Order newOrder = new Order(orderRequest);
+        Order newOrder = new Order(orderRequest, customerRequest);
         newOrder.setId_order(id_order);
+
         if(!authentication.getName().equals("anonymousUser")) {
             User foundUser = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            foundUser.setFull_name(customerRequest.getFull_name());
-            foundUser.setPhone(customerRequest.getPhone());
-            foundUser.setDistrict(customerRequest.getDistrict());
-            foundUser.setAddress(customerRequest.getAddress());
-            foundUser.setProvince(customerRequest.getProvince());
-            foundUser.setWard(customerRequest.getWard());
-
             List<Cart> carts = foundUser.getCarts().stream().filter(Cart::getCheck).toList();
             cartRepository.deleteAllInBatch(carts);
             newOrder.setUser(foundUser);

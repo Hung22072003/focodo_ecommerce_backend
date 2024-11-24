@@ -25,6 +25,12 @@ public class OrderDTO {
     private String payment_status;
     private String payment_method;
     private boolean review_check;
+    private String full_name;
+    private String phone;
+    private String address;
+    private String province;
+    private String district;
+    private String ward;
     private UserDTO customer;
     List<OrderDetailDTO> order_details;
 
@@ -42,5 +48,11 @@ public class OrderDTO {
         this.payment_method = order.getPaymentMethod().getMethod();
         this.customer = order.getUser() != null ? new UserDTO(order.getUser()) : null;
         this.order_details = order.getOrderDetails() != null ? order.getOrderDetails().stream().map(OrderDetailDTO::new).toList() : List.of();
+        this.full_name = order.getFull_name();
+        this.phone = order.getPhone();
+        this.address = order.getAddress();
+        this.province = order.getProvince();
+        this.district = order.getDistrict();
+        this.ward = order.getWard();
     }
 }
