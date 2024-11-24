@@ -99,7 +99,6 @@ public class ReviewServiceImpl implements ReviewService{
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         Review foundReview = reviewRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
         if(authentication.getName().equals(foundReview.getUser().getUsername())){
-            foundReview.setDate(LocalDateTime.now());
             foundReview.setContent(reviewRequest.getContent());
             foundReview.setRating(reviewRequest.getRating());
             List<ImageReview> newImages = new ArrayList<ImageReview>();
