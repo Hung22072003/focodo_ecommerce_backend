@@ -164,8 +164,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean checkTokenExpired(String token) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication.getName());
         String username = jwtService.extractUsername(token);
         UserDetails user = userDetailsService.loadUserByUsername(username);
         return jwtService.isTokenValid(token, user);

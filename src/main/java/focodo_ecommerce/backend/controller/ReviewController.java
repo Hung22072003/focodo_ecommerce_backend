@@ -30,11 +30,6 @@ public class ReviewController {
         return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.getAllReviews(page, size)).build();
     }
 
-    @GetMapping("/all")
-    public ApiResponse<List<ReviewDTO>> getAllReviewsNotPaginated() {
-        return ApiResponse.<List<ReviewDTO>>builder().result(reviewService.getAllReviewsNotPaginated()).build();
-    }
-
     @GetMapping("/getReviewsOfProduct/{id}")
     public ApiResponse<PaginationObjectResponse> getReviewsOfProduct(
             @PathVariable("id") int id,

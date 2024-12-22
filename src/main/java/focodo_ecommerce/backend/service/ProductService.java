@@ -33,4 +33,6 @@ public interface ProductService {
     List<ProductDTO> getProductsDiscount();
 
     void activeProduct(int id);
+
+    List<ProductDTO> getRelatedProducts(int id);
 }

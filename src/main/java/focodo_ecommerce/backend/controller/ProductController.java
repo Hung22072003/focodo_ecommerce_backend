@@ -67,6 +67,13 @@ public class ProductController {
     ) {
         return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(id)).build();
     }
+
+    @GetMapping("/getRelatedProducts/{id}")
+    public ApiResponse<List<ProductDTO>> getProductsRelated(
+            @PathVariable("id") int id
+    ) {
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getRelatedProducts(id)).build();
+    }
     @GetMapping("/search")
     public ApiResponse<PaginationObjectResponse> searchProducts(
             @RequestParam(name = "query") String query,

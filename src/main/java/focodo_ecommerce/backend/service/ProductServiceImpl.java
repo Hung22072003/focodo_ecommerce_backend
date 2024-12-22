@@ -30,6 +30,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -102,6 +103,19 @@ public class ProductServiceImpl implements ProductService{
     public void activeProduct(int id) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         foundProduct.set_delete(false);
+    }
+
+    @Override
+    public List<ProductDTO> getRelatedProducts(int id) {
+        Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        List<ProductDTO> relatedProducts = new ArrayList<>();
+        List<Integer> exclusionIds = new ArrayList<>(Arrays.asList(1,2,8));
+        foundProduct.getProductCategories().forEach((productCategory -> {
+            if (!exclusionIds.contains(productCategory.getCategory().getId())) {
+                relatedProducts.addAll(getProductsByCategory(productCategory.getCategory().getId()));
+            }
+        }));
+        return relatedProducts.stream().distinct().toList();
     }
 
 
