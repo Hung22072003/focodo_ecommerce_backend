@@ -29,4 +29,6 @@ public interface CategoryService {
     CategoryDTO updateCategory(int id, CategoryRequest category, MultipartFile image);
 
     List<CategoryDTO> getCategoriesByOptions(List<String> options);
+
+    PaginationObjectResponse searchCategories(String query, int page, int size);
 }

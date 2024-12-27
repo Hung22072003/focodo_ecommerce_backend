@@ -125,7 +125,7 @@ public class StatisticsServiceImpl implements StatisticsService{
 
     @Override
     public List<ProductDTO> topProductBestSeller() {
-        Page<Product> products = productRepository.findProductsBestSeller(PageRequest.of(0, 8, Sort.by("sold_quantity").descending()));
+        Page<Product> products = productRepository.findProductsBestSeller(PageRequest.of(0, 7, Sort.by("sold_quantity").descending()));
         return products.get().map(ProductDTO::new).toList();
     }
 
@@ -133,7 +133,7 @@ public class StatisticsServiceImpl implements StatisticsService{
     public List<ProductDTO> topProductRating() {
         List<Product> products = productRepository.findAll();
         List<ProductDTO> result = products.stream().map(ProductDTO::new).filter((productDTO) -> productDTO.getReview() != 0.0).sorted(Comparator.comparing(ProductDTO::getReview).reversed()).collect(Collectors.toList());
-        return result.size() > 8 ? result.subList(0,8) : result;
+        return result.size() > 6 ? result.subList(0,6) : result;
     }
 
     @Override

@@ -39,4 +39,8 @@ public interface OrderService {
     PaginationObjectResponse getOrdersOfUserById(int page, int size, int idUser);
 
     Integer getNumberOfOrderByStatus(String status);
+
+    PaginationObjectResponse searchOrders(String query, int page, int size);
+
+    PaginationObjectResponse searchOrdersOfUser(String query, int idUser, int page, int size);
 }

@@ -67,6 +67,13 @@ public class ProductController {
     ) {
         return ApiResponse.<List<ProductDTO>>builder().result(productService.getProductsByCategory(id)).build();
     }
+
+    @GetMapping("/getRelatedProducts/{id}")
+    public ApiResponse<List<ProductDTO>> getProductsRelated(
+            @PathVariable("id") int id
+    ) {
+        return ApiResponse.<List<ProductDTO>>builder().result(productService.getRelatedProducts(id)).build();
+    }
     @GetMapping("/search")
     public ApiResponse<PaginationObjectResponse> searchProducts(
             @RequestParam(name = "query") String query,
@@ -109,5 +116,13 @@ public class ProductController {
     ) {
         productService.deleteProduct(id);
         return ApiResponse.<String>builder().result("Delete product successfully").build();
+    }
+
+    @PutMapping("/activeProduct/{id}")
+    public ApiResponse<String> updateStatusProduct(
+            @PathVariable("id") int id
+    ) {
+        productService.activeProduct(id);
+        return ApiResponse.<String>builder().result("Active product successfully").build();
     }
 }

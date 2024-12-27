@@ -29,4 +29,8 @@ public interface ReviewService {
     ReviewDTO getReviewById(int id);
 
     PaginationObjectResponse getReviewsByIdUser(int id, int page, int size);
+
+    PaginationObjectResponse searchReviews(String query, int page, int size);
+
+    PaginationObjectResponse searchReviewsOfUser(String query, int idUser, int page, int size);
 }

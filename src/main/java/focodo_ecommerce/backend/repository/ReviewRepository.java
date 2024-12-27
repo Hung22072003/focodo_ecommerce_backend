@@ -25,4 +25,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>, JpaSpe
     Page<Review> findReviewsByProductAndRating(@Param("id_product") int id_product, @Param("rating") int rating, Pageable pageable);
     @Query("select r from Review r where r.user = :user")
     Page<Review> findReviewsByUser(@Param("user")User user, Pageable pageable);
+    @Query("select r from Review r where r.content like concat('%', :query, '%')")
+    Page<Review> findByContentContaining(String query, Pageable pageable);
+    @Query("select r from Review r where r.user = :user and r.content like concat('%', :query, '%')")
+    Page<Review> findByContentContainingOfUser(String query, User user, Pageable pageable);
 }

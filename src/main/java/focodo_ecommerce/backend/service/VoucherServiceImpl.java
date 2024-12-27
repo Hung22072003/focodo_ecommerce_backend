@@ -21,14 +21,12 @@ public class VoucherServiceImpl implements VoucherService{
     public List<VoucherDTO> getAllVoucher() {
         return voucherRepository.findAll().stream().filter((voucher) -> !voucher.getEnd_date().isBefore(LocalDate.now()) && !voucher.getStart_date().isAfter(LocalDate.now())).map(VoucherDTO::new).toList();
     }
-    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public List<VoucherDTO> getAllVoucher(int page, int size) {
         return voucherRepository.findAll(PageRequest.of(page,size)).get().map(VoucherDTO::new).toList();
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<VoucherDTO> getAllVoucherNotPaginated() {
         return voucherRepository.findAll().stream().map(VoucherDTO::new).toList();
     }

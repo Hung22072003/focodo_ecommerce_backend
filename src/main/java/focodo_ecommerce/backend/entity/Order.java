@@ -1,5 +1,6 @@
 package focodo_ecommerce.backend.entity;
 
+import focodo_ecommerce.backend.model.CustomerRequest;
 import focodo_ecommerce.backend.model.OrderRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,12 @@ public class Order {
     private Long total_price;
     private Long final_price;
     private boolean is_check = false;
-
+    private String full_name;
+    private String phone;
+    private String address;
+    private String province;
+    private String district;
+    private String ward;
     @ManyToOne
     @JoinColumn(name = "order_status_id")
     private OrderStatus orderStatus;
@@ -52,12 +58,18 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Notification notification;
 
-    public Order(OrderRequest orderRequest) {
+    public Order(OrderRequest orderRequest, CustomerRequest customerRequest) {
         this.description = orderRequest.getDescription();
         this.order_date = LocalDateTime.now();
         this.shipping_price = orderRequest.getShipping_price();
         this.discount_price = orderRequest.getDiscount_price();
         this.total_price = orderRequest.getTotal_price();
         this.final_price = orderRequest.getFinal_price();
+        this.full_name = customerRequest.getFull_name();
+        this.phone = customerRequest.getPhone();
+        this.address = customerRequest.getAddress();
+        this.province = customerRequest.getProvince();
+        this.district = customerRequest.getDistrict();
+        this.ward = customerRequest.getWard();
     }
 }

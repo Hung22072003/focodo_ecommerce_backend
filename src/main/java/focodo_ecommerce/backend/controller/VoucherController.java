@@ -32,7 +32,7 @@ public class VoucherController {
         return ApiResponse.<List<VoucherDTO>>builder().result(voucherService.getAllVoucherNotPaginated()).build();
     }
     @GetMapping("/{id}")
-    public ApiResponse<VoucherDTO> getAllVoucher(
+    public ApiResponse<VoucherDTO> getVoucherById(
             @PathVariable("id") String id
     ) {
         return ApiResponse.<VoucherDTO>builder().result(voucherService.getVoucherById(id)).build();

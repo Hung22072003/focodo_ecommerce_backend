@@ -33,7 +33,7 @@ public class User implements UserDetails {
     private String password;
     private String avatar;
     private Long total_money = 0L;
-    private int total_order = 0;
+    private Integer total_order = 0;
     private LocalDateTime created_date;
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -56,6 +56,7 @@ public class User implements UserDetails {
         this.ward = customerRequest.getWard();
         this.role = Role.CUSTOMER;
         this.total_money = 0L;
+        this.total_order = 0;
     }
 
     @Override

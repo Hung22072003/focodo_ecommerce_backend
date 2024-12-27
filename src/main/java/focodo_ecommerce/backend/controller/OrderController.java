@@ -107,4 +107,23 @@ public class OrderController {
     ) {
         return ApiResponse.<Integer>builder().result(orderService.getNumberOfOrderByStatus(status)).build();
     }
+
+    @GetMapping("/search")
+    public ApiResponse<PaginationObjectResponse> searchOrders(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "6") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(orderService.searchOrders(query, page, size)).build();
+    }
+
+    @GetMapping("/searchOrdersOfUser")
+    public ApiResponse<PaginationObjectResponse> searchOrdersOfUser(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "6") int size,
+            @RequestParam(name = "id_user") int id_user
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(orderService.searchOrdersOfUser(query,id_user, page, size)).build();
+    }
 }

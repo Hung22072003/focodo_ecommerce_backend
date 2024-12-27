@@ -24,7 +24,8 @@ public enum ErrorCode {
     ORDER_STATUS_NOT_FOUND(1017, "Order status not found"),
     NOTIFICATION_NOT_FOUND(1018, "Notification not found"),
     CATEGORY_EXIST(1019, "Category already exists"),
-    PAYMENT_STATUS_NOT_FOUND(1020, "Payment status not found"),;
+    PAYMENT_STATUS_NOT_FOUND(1020, "Payment status not found"),
+    PHONE_EXIST(1021, "Phone has been already used");
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;

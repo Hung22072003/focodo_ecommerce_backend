@@ -1,8 +1,10 @@
 package focodo_ecommerce.backend.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,15 +25,20 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final String[] PUBLIC_ENDPOINTS = {
             "/api/v1/auth/**",
+            "/api/v1/payment/**",
+            "/api/v1/categories/getCategoriesByOptions",
+            "/api/v1/orders/create",
+            "/api/v1/orders/getAllOrderStatus",
+            "/api/v1/orders/getAllPaymentMethod",
+            "/api/v1/reviews",
+            "/api/v1/reviews/getReviewsOfProduct/{id}",
+            "/api/v1/reviews/getReviewsByProduct/{id}",
+    };
+
+    private final String[] PUBLIC_ENDPOINTS_GET_METHOD = {
             "/api/v1/products/**",
             "/api/v1/categories/**",
-            "/api/v1/vouchers/**",
-            "/api/v1/reviews/**",
-            "/api/v1/users/**",
-            "/api/v1/payment/**",
-            "/api/v1/orders/**",
-            "/api/v1/notifications/**",
-            "/api/v1/statistics/**"
+            "/api/v1/vouchers/**"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +48,8 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(PUBLIC_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET_METHOD)
                 .permitAll()
                 .anyRequest()
                 .authenticated()

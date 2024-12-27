@@ -53,17 +53,10 @@ public class OrderServiceImpl implements OrderService{
         }
 
         PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequest.getPayment_method()).orElseThrow(() -> new AppException(ErrorCode.PAYMENT_METHOD_NOT_FOUND));
-        Order newOrder = new Order(orderRequest);
+        Order newOrder = new Order(orderRequest, customerRequest);
         newOrder.setId_order(id_order);
         if(!authentication.getName().equals("anonymousUser")) {
             User foundUser = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            foundUser.setFull_name(customerRequest.getFull_name());
-            foundUser.setPhone(customerRequest.getPhone());
-            foundUser.setDistrict(customerRequest.getDistrict());
-            foundUser.setAddress(customerRequest.getAddress());
-            foundUser.setProvince(customerRequest.getProvince());
-            foundUser.setWard(customerRequest.getWard());
-
             List<Cart> carts = foundUser.getCarts().stream().filter(Cart::getCheck).toList();
             cartRepository.deleteAllInBatch(carts);
             newOrder.setUser(foundUser);
@@ -91,7 +84,7 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.save(newOrder);
         List<OrderDetail> orderDetails = orderRequest.getDetails().stream().map((orderDetailRequest -> {
             Product product = productRepository.findById(orderDetailRequest.getId_product()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-            if(product.getQuantity() < orderDetailRequest.getQuantity()) throw new RuntimeException("Product is not enough quantity");
+//            if(product.getQuantity() < orderDetailRequest.getQuantity()) throw new RuntimeException("Product is not enough quantity");
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(newOrder);
             orderDetail.setProduct(product);
@@ -246,5 +239,20 @@ public class OrderServiceImpl implements OrderService{
                     orders.stream().filter((order) -> order.getOrderStatus().getStatus().equals("Đã hủy")).toList().size();
             default -> 0;
         };
+    }
+
+    @Override
+    public PaginationObjectResponse searchOrders(String query, int page, int size) {
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Order> orders = orderRepository.findByIdOrderContaining(query, PageRequest.of(page, size, Sort.by("order_date").descending()));
+        return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
+    }
+
+    @Override
+    public PaginationObjectResponse searchOrdersOfUser(String query, int idUser, int page, int size) {
+        User foundUser = userRepository.findById(idUser).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Order> orders = orderRepository.findByIdOrderContainingOfUser(query, foundUser, PageRequest.of(page, size, Sort.by("order_date").descending()));
+        return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
     }
 }

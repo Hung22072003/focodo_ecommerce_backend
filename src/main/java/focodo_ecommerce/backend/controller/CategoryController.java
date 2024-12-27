@@ -89,4 +89,12 @@ public class CategoryController {
     ) {
         categoryService.removeProductFromCategory(id_category, id_product);
     }
+    @GetMapping("/search")
+    public ApiResponse<PaginationObjectResponse> searchCategories(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "6") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(categoryService.searchCategories(query, page, size)).build();
+    }
 }
