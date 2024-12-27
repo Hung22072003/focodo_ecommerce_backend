@@ -1,7 +1,9 @@
 package focodo_ecommerce.backend.service;
 
 import focodo_ecommerce.backend.dto.CategoryDTO;
+import focodo_ecommerce.backend.dto.OrderDTO;
 import focodo_ecommerce.backend.entity.Category;
+import focodo_ecommerce.backend.entity.Order;
 import focodo_ecommerce.backend.entity.ProductCategory;
 import focodo_ecommerce.backend.entity.embeddedID.ProductCategoryId;
 import focodo_ecommerce.backend.exception.AppException;
@@ -132,6 +134,13 @@ public class CategoryServiceImpl implements CategoryService{
     public List<CategoryDTO> getCategoriesByOptions(List<String> options) {
         List<CategoryDTO> categoryDTOS = getAllCategoriesNotPaginated();
         return categoryDTOS.stream().filter((categoryDTO) -> options.contains((categoryDTO.getName()))).collect(Collectors.toList());
+    }
+
+    @Override
+    public PaginationObjectResponse searchCategories(String query, int page, int size) {
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Category> categories = categoryRepository.findByNameContaining(query, PageRequest.of(page, size));
+        return PaginationObjectResponse.builder().data(categories.get().map(CategoryDTO::new).toList()).pagination(new Pagination(categories.getTotalElements(),categories.getTotalPages(),categories.getNumber())).build();
     }
 
     @Override

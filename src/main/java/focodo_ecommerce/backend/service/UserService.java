@@ -25,4 +25,6 @@ public interface UserService {
     void updateAvatar(MultipartFile avatar);
 
     UserDTO updateProfileUser(String fullName, String email, String phone, String address, String province, String district, String ward);
+
+    PaginationObjectResponse searchCustomers(String query, int page, int size);
 }

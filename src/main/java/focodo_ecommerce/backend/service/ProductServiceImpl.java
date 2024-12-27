@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService{
     public List<ProductDTO> getRelatedProducts(int id) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         List<ProductDTO> relatedProducts = new ArrayList<>();
-        List<Integer> exclusionIds = new ArrayList<>(Arrays.asList(1,2,8));
+        List<Integer> exclusionIds = new ArrayList<>(Arrays.asList(1,2,3));
         foundProduct.getProductCategories().forEach((productCategory -> {
             if (!exclusionIds.contains(productCategory.getCategory().getId())) {
                 relatedProducts.addAll(getProductsByCategory(productCategory.getCategory().getId()));

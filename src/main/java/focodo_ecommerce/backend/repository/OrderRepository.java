@@ -28,7 +28,7 @@ public interface OrderRepository extends JpaRepository<Order, String> , JpaSpeci
     BigDecimal sumFinalPriceByDate(@Param("formatDate") String formatDate, @Param("date") String date);
 
     @Query(value = "SELECT SUM(o.final_price - o.shipping_price) FROM `order` o " +
-            "WHERE o.payment_status_id = 1", nativeQuery = true)
+            "WHERE o.order_status_id = 3", nativeQuery = true)
     BigDecimal totalRevenue();
 
     @Query("SELECT COUNT(u.id) " +
@@ -41,4 +41,9 @@ public interface OrderRepository extends JpaRepository<Order, String> , JpaSpeci
             "    HAVING COUNT(o.id) > 1" +
             ")")
     Long countUsersWithMultipleOrders();
+
+    @Query("select o from Order o where o.id_order LIKE concat('%', :query, '%')")
+    Page<Order> findByIdOrderContaining(String query, Pageable pageable);
+    @Query("select o from Order o where o.user = :user and o.id_order LIKE concat('%', :query, '%')")
+    Page<Order> findByIdOrderContainingOfUser(String query, User user, Pageable pageable);
 }

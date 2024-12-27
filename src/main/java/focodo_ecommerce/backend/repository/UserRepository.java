@@ -2,6 +2,7 @@ package focodo_ecommerce.backend.repository;
 
 import focodo_ecommerce.backend.entity.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Page<User> findAllCustomer(Pageable pageable);
     @Query("select u from User u where (u.role = 'USER' or u.role = 'CUSTOMER') and u.total_money > 0")
     Page<User> topCustomerBySpending(Pageable pageable);
+    @Query("select u from User u where (u.role = 'USER' or u.role = 'CUSTOMER') and u.phone LIKE concat('%', :query, '%')")
+    Page<User> findByPhoneContaining(String query, Pageable pageable);
 }

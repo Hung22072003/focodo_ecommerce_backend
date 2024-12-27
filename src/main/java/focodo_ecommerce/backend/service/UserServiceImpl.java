@@ -1,7 +1,9 @@
 package focodo_ecommerce.backend.service;
 
+import focodo_ecommerce.backend.dto.OrderDTO;
 import focodo_ecommerce.backend.dto.ReviewDTO;
 import focodo_ecommerce.backend.dto.UserDTO;
+import focodo_ecommerce.backend.entity.Order;
 import focodo_ecommerce.backend.entity.User;
 import focodo_ecommerce.backend.exception.AppException;
 import focodo_ecommerce.backend.exception.ErrorCode;
@@ -102,6 +104,13 @@ public class UserServiceImpl implements UserService{
         if(district != null) foundUser.setProvince(district);
         if(ward != null) foundUser.setWard(ward);
         return new UserDTO(foundUser);
+    }
+
+    @Override
+    public PaginationObjectResponse searchCustomers(String query, int page, int size) {
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<User> users = userRepository.findByPhoneContaining(query, PageRequest.of(page, size));
+        return PaginationObjectResponse.builder().data(users.get().map(UserDTO::new).toList()).pagination(new Pagination(users.getTotalElements(),users.getTotalPages(),users.getNumber())).build();
     }
 
     @Override

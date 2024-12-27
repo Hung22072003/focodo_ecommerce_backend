@@ -83,4 +83,13 @@ public class UserController {
     ) {
         userService.updatePassword(old_password, new_password);
     }
+
+    @GetMapping("/search")
+    public ApiResponse<PaginationObjectResponse> searchCustomers(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "6") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(userService.searchCustomers(query, page, size)).build();
+    }
 }

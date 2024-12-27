@@ -1,5 +1,6 @@
 package focodo_ecommerce.backend.service;
 
+import focodo_ecommerce.backend.dto.CategoryDTO;
 import focodo_ecommerce.backend.dto.ReviewDTO;
 import focodo_ecommerce.backend.entity.*;
 import focodo_ecommerce.backend.exception.AppException;
@@ -209,5 +210,20 @@ public class ReviewServiceImpl implements ReviewService{
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         Page<Review> reviews = reviewRepository.findReviewsByUser(user, PageRequest.of(page, size, Sort.by("date").descending()));
         return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(), reviews.getTotalPages(), reviews.getNumber())).build();
+    }
+
+    @Override
+    public PaginationObjectResponse searchReviews(String query, int page, int size) {
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Review> reviews = reviewRepository.findByContentContaining(query, PageRequest.of(page, size, Sort.by("date").descending()));
+        return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(),reviews.getTotalPages(),reviews.getNumber())).build();
+    }
+
+    @Override
+    public PaginationObjectResponse searchReviewsOfUser(String query, int idUser, int page, int size) {
+        User user = userRepository.findById(idUser).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Review> reviews = reviewRepository.findByContentContainingOfUser(query, user, PageRequest.of(page, size, Sort.by("date").descending()));
+        return PaginationObjectResponse.builder().data(reviews.get().map(ReviewDTO::new).toList()).pagination(new Pagination(reviews.getTotalElements(),reviews.getTotalPages(),reviews.getNumber())).build();
     }
 }

@@ -23,7 +23,7 @@ public class Product {
     private Long sell_price;
     @Column(name = "sub_description", length = 5000)
     private String sub_description;
-    @Column(name = "main_description", length = 5000)
+    @Column(name = "main_description", columnDefinition = "TEXT")
     private String main_description;
     private Double discount;
     private int sold_quantity;

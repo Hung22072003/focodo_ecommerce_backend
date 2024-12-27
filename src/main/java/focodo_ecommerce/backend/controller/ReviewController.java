@@ -114,4 +114,25 @@ public class ReviewController {
         reviewService.deleteReview(id);
         return ApiResponse.<String>builder().result("Delete review successfully").build();
     }
+
+    // Tìm kiếm toàn bộ đánh giá
+    @GetMapping("/search")
+    public ApiResponse<PaginationObjectResponse> searchReviews(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "6") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.searchReviews(query, page, size)).build();
+    }
+
+    // Tìm kiếm đánh giá của một customer
+    @GetMapping("/searchReviewsOfUser")
+    public ApiResponse<PaginationObjectResponse> searchReviewsOfUser(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "6") int size,
+            @RequestParam(name = "id_user") int id_user
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(reviewService.searchReviewsOfUser(query,id_user, page, size)).build();
+    }
 }

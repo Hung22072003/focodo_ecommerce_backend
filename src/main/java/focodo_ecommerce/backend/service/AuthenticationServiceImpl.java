@@ -43,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         User user = userRepository.findByPhone(request.getPhone()).orElse(null);
         if(user != null) {
+            if(user.getRole().equals(Role.USER)) throw new AppException(ErrorCode.PHONE_EXIST);
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
@@ -59,6 +60,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.USER)
                     .created_date(LocalDateTime.now())
+                    .total_money(0L)
+                    .total_order(0)
                     .build();
             userRepository.save(user);
         }

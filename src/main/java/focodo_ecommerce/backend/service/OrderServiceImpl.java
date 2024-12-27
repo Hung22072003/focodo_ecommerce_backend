@@ -240,4 +240,19 @@ public class OrderServiceImpl implements OrderService{
             default -> 0;
         };
     }
+
+    @Override
+    public PaginationObjectResponse searchOrders(String query, int page, int size) {
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Order> orders = orderRepository.findByIdOrderContaining(query, PageRequest.of(page, size, Sort.by("order_date").descending()));
+        return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
+    }
+
+    @Override
+    public PaginationObjectResponse searchOrdersOfUser(String query, int idUser, int page, int size) {
+        User foundUser = userRepository.findById(idUser).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Order> orders = orderRepository.findByIdOrderContainingOfUser(query, foundUser, PageRequest.of(page, size, Sort.by("order_date").descending()));
+        return PaginationObjectResponse.builder().data(orders.get().map(OrderDTO::new).toList()).pagination(new Pagination(orders.getTotalElements(),orders.getTotalPages(),orders.getNumber())).build();
+    }
 }
