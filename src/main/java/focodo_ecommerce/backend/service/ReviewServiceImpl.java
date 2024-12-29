@@ -31,7 +31,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService{
-    private final String folderName = "focodo_ecommerce/review";
+    private final String folderName = "focodo-ecommerce/review";
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final ImageReviewRepository imageReviewRepository;

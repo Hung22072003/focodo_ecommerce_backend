@@ -21,6 +21,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
 
     @Query(value = "SELECT * FROM product WHERE lower(fn_remove_accents(name)) LIKE concat('%', lower(fn_remove_accents(:name)), '%') and is_delete = false", nativeQuery = true)
     Page<Product> findByNameContaining(String name, Pageable pageable);
+
+    @Query(value = "SELECT * FROM product WHERE lower(fn_remove_accents(name)) LIKE concat('%', lower(fn_remove_accents(:name)), '%')", nativeQuery = true)
+    Page<Product> findByNameContainingAllProduct(String name, Pageable pageable);
     @Query(value = "select p from Product p inner join ProductCategory pc on p.id = pc.productCategoryId.id_product where pc.productCategoryId.id_category = :id_category and p.is_delete = false")
     List<Product> findProductsByCategory(@Param("id_category") int id_category);
     @Query(value = "select p from Product p where p.sold_quantity != 0 and p.is_delete = false")

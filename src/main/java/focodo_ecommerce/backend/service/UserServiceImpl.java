@@ -32,7 +32,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
-    private final String folderName = "focodo_ecommerce/user";
+    private final String folderName = "focodo-ecommerce/user";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;

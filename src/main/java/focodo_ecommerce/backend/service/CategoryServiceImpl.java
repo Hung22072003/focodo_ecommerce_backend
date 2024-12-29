@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService{
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductRepository productRepository;
     private final CloudinaryService cloudinaryService;
-    private final String folderName = "focodo_ecommerce/category";
+    private final String folderName = "focodo-ecommerce/category";
     @Override
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream().filter((category) -> category.getParent_category() == null).map(CategoryDTO::new).toList();

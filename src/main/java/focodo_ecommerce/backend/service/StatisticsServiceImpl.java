@@ -119,7 +119,7 @@ public class StatisticsServiceImpl implements StatisticsService{
 
     @Override
     public List<UserDTO> topCustomerBySpending() {
-        Page<User> users = userRepository.topCustomerBySpending(PageRequest.of(0,8, Sort.by("total_money").descending()));
+        Page<User> users = userRepository.topCustomerBySpending(PageRequest.of(0,4, Sort.by("total_money").descending()));
         return users.get().map(UserDTO::new).toList();
     }
 

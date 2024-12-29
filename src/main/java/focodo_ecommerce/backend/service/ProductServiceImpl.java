@@ -36,7 +36,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
-    private final String folderName = "focodo_ecommerce/product";
+    private final String folderName = "focodo-ecommerce/product";
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
@@ -116,6 +116,13 @@ public class ProductServiceImpl implements ProductService{
             }
         }));
         return relatedProducts.stream().distinct().toList();
+    }
+
+    @Override
+    public PaginationObjectResponse searchAllProduct(String query, int page, int size) {
+        if(query.isEmpty()) return PaginationObjectResponse.builder().build();
+        Page<Product> products = productRepository.findByNameContainingAllProduct(query, PageRequest.of(page, size, Sort.by("id").descending()));
+        return PaginationObjectResponse.builder().data(products.get().map(ProductDTO::new).toList()).pagination(new Pagination(products.getTotalElements(), products.getTotalPages(), products.getNumber())).build();
     }
 
 

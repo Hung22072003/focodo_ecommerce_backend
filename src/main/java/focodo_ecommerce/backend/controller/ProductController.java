@@ -83,6 +83,14 @@ public class ProductController {
         return ApiResponse.<PaginationObjectResponse>builder().result(productService.searchProducts(query, page, size)).build();
     }
 
+    @GetMapping("/searchAllProduct")
+    public ApiResponse<PaginationObjectResponse> searchAllProduct(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "4") int size
+    ) {
+        return ApiResponse.<PaginationObjectResponse>builder().result(productService.searchAllProduct(query, page, size)).build();
+    }
     @PostMapping("/create")
     public ApiResponse<ProductDetailDTO> createProduct(
             @RequestParam(name = "images", required = false) List<MultipartFile> images,
